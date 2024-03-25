@@ -1,3 +1,39 @@
 from django.db import models
 
-# Create your models here.
+
+class TrashIsland(models.Model):
+    street_name = models.CharField(max_length=255)
+    street_number = models.CharField(max_length=255)
+    zip_code = models.CharField(max_length=255)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+TRASH_TYPES = (
+    (0, "Restaffald"),
+    (1, "Glas"),
+    (2, "Papir/Pap"),
+    (3, "Metal/Plastik"),
+    (4, "Batteri"),
+    (5, "Elektronik"),
+
+)
+
+
+class Trashcan(models.Model):
+    island = models.ForeignKey(TrashIsland, on_delete=models.SET_NULL, null=True)
+    type = models.IntegerField(choices=TRASH_TYPES)
+    capacity = models.IntegerField()
+    status = models.IntegerField()
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class SensorData(models.Model):
+    trashcan = models.ForeignKey(Trashcan, on_delete=models.SET_NULL, null=True)
+    status = models.IntegerField()
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
