@@ -5,8 +5,8 @@ class TrashIsland(models.Model):
     street_name = models.CharField(max_length=255)
     street_number = models.CharField(max_length=255)
     zip_code = models.CharField(max_length=255)
-    longitude = models.FloatField()
-    latitude = models.FloatField()
+    longitude = models.FloatField(null=True)
+    latitude = models.FloatField(null=True)
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
