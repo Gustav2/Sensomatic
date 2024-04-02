@@ -20,3 +20,13 @@ def gateway(request):
         SensorData.objects.create(trashcan=trashcan, status=data['status'])
 
         return HttpResponse("")
+
+# til test af esp
+@csrf_exempt
+def handle_post(request):
+    if request.method == 'POST':
+        received_data = request.POST.get('data', '')
+        print("Received data:", received_data)
+        return HttpResponse("Data received successfully.")
+    else:
+        return HttpResponse("Only POST requests are allowed.")
