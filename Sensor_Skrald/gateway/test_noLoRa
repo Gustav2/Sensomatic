@@ -1,0 +1,54 @@
+// Include required libraries
+#include <HTTPClient.h>
+#include <WiFi.h>
+#include <SPI.h>
+#include <LoRa.h>
+
+// Information for WiFi connection
+const char* ssid = "Sensomatic";
+const char* password = "password12!";
+
+void wifi_setup() {
+  delay(1000);
+  WiFi.begin(ssid, password);   //Connects to the WiFi
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Connecting to WiFi...");    // Prints connecting message if not connected
+  }
+  Serial.println("Connected succesfully!");     // Connected
+}
+
+void setup() {
+  Serial.begin(115200);
+  while (!Serial)
+    ;
+
+  wifi_setup();
+}
+ 
+void loop() {
+    // POST this to the HTTP connection
+    if (WiFi.status() == WL_CONNECTED) {
+      HTTPClient http;
+
+      http.begin("http://192.168.0.102:8000/datacollector/handle_post/"); // Specify destination for HTTP request
+      http.addHeader("Content-Type", "text/plain"); // Specify content-type header
+
+      
+
+      int httpResponseCode = http.POST("Test fra ESP"); // Actual POST request
+
+        
+      String response = http.getString();       // Get response and print in Serial
+      Serial.println(httpResponseCode);
+      Serial.println(response);
+    
+      http.end();   // Ends HTTP to free resources
+    
+    }
+    else {
+      Serial.println("Error in WiFi connection");
+      }
+
+    delay(10000);   // Repeats after 10 seconds
+ }

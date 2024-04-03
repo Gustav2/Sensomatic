@@ -25,8 +25,8 @@ def gateway(request):
 @csrf_exempt
 def handle_post(request):
     if request.method == 'POST':
-        received_data = request.POST.get('data', '')
-        print("Received data:", received_data)
+        payload = json.loads(request.body)
+        print("Received data:", payload)
         return HttpResponse("Data received successfully.")
     else:
         return HttpResponse("Only POST requests are allowed.")
