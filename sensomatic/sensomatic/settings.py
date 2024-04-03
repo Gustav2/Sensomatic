@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'users',
     'operations',
     'datacollector',
     'dashboard'
@@ -60,7 +59,6 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             os.path.join(BASE_DIR, 'templates'),
-            os.path.join(BASE_DIR, 'users', 'templates'),
             os.path.join(BASE_DIR, 'operations', 'templates'),
             os.path.join(BASE_DIR, 'datacollector', 'templates'),
             os.path.join(BASE_DIR, 'dashboard', 'templates')
