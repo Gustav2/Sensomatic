@@ -51,6 +51,8 @@ class NavigationUIActivity :
 
     private var simulateRoute = false
 
+    private var waypoints = mutableListOf<Point>()
+
     @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,6 +96,7 @@ class NavigationUIActivity :
             }
             destination = null
             waypoint = null
+            waypoints.clear()
             it.visibility = View.GONE
             binding.startRouteLayout.visibility = View.GONE
 
@@ -146,12 +149,8 @@ class NavigationUIActivity :
         var addMarker = true
         when {
             destination == null -> destination = Point.fromLngLat(point.longitude, point.latitude)
-            waypoint == null -> waypoint = Point.fromLngLat(point.longitude, point.latitude)
-            else -> {
-                Toast.makeText(this, "Only 2 waypoints supported", Toast.LENGTH_LONG).show()
-                addMarker = false
-            }
         }
+        waypoints.add(Point.fromLngLat(point.longitude, point.latitude))
 
         if (addMarker) {
             mapboxMap.addMarker(MarkerOptions().position(point))
@@ -179,11 +178,13 @@ class NavigationUIActivity :
             binding.startRouteLayout.visibility = View.GONE
             return
         }
-
         val navigationRouteBuilder = NavigationRoute.builder(this).apply {
             this.accessToken(getString(R.string.mapbox_access_token))
             this.origin(origin)
             this.destination(destination)
+            for (waypoint in waypoints) {
+                this.addWaypoint(waypoint)
+            }
             this.voiceUnits(DirectionsCriteria.METRIC)
             this.alternatives(true)
             this.user("gh")
