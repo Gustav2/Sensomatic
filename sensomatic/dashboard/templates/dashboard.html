@@ -4,14 +4,12 @@
 <title>Page Title</title>
 </head>
 <body>
-
-    {% extends 'master.html' %}
+{% extends 'master.html' %}
 {% block content %}
     <p>{{ message }}</p>
-    <form method="post">
-        {{ form.as_p }}
+    <form action="{% url 'logout' %}" method="post">
         {% csrf_token %}
-        <button type="submit" >Login</button>
+        <button type="submit" >Log out</button>
     </form>
 {% endblock content %}
 
