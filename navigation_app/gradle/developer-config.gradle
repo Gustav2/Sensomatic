@@ -1,0 +1,29 @@
+//
+// Configuration file for gradle build execution.
+//
+
+task accessToken {
+    def tokenFile = new File("${projectDir}/src/main/res/values/developer-config.xml")
+    if (!tokenFile.exists()) {
+        String mapboxAccessToken = "$System.env.GRAPHHOPPER_API_KEY"
+        if (mapboxAccessToken == "null") {
+            System.out.println("You can set the GRAPHHOPPER_API_KEY environment variable.")
+            mapboxAccessToken = "GRAPHHOPPER_API_KEY"
+        }
+        String tokenFileContents = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                "<resources>\n" +
+                "    <string name=\"base_url\" translatable=\"false\">https://graphhopper.com/api/1/navigate/</string>" +
+                "    <!-- Your GraphHopper API key -->\n" +
+                "    <string name=\"mapbox_access_token\" translatable=\"false\">" + mapboxAccessToken + "</string>\n" +
+                "    <!-- The \"day\" style used for navigation, here mapilion is used but you can use maptiler too -->\n" +
+                "    <string name=\"map_style_light\" translatable=\"false\">https://tiles.mapilion.com/assets/osm-bright/style.json?key=MAPTILER_API_KEY</string>\n" +
+                "    <!-- The \"night\" style used for navigation -->\n" +
+                "    <string name=\"map_style_dark\" translatable=\"false\">https://tiles.mapilion.com/assets/dark-matter/style.json?key=MAPTILER_API_KEY</string>\n" +
+                "</resources>"
+        tokenFile.write(tokenFileContents)
+    }
+}
+
+gradle.projectsEvaluated {
+    preBuild.dependsOn('accessToken')
+}
