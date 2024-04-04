@@ -106,19 +106,16 @@ void loop() {
   Serial.print("Read duration (ms): ");
   Serial.println(timestamp);
 
+  // Create payload for packet
+  String payload = String(msgCount) + "#" + String(temp.temperature) + "/" + String(humidity.relative_humidity);
 
     // LoRa packet sending
   Serial.print("Sending packet: ");
   Serial.println(msgCount);
- 
+
   // Send packet
   LoRa.beginPacket();
-  LoRa.print("Packet ");
-  LoRa.print(msgCount);
-  LoRa.print("Temperature: ");
-  LoRa.print(temp.temperature);
-  LoRa.print("Humidity ");
-  LoRa.print(humidity.relative_humidity);
+  LoRa.print(payload);
   LoRa.endPacket();
  
   // Increment packet counter
