@@ -27,6 +27,7 @@ def dashboard(request):
     else:
         return redirect('index')
 
-def logout(request):
+def logout_user(request):
     if request.method == 'POST':
+        logout(request)
         return redirect('index')
