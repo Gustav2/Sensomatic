@@ -26,10 +26,11 @@ def index_login_page(request):
 def dashboard(request):
     if request.user.is_authenticated:
         routes = Route.objects.all().filter(completed=False)
+        complete_adresslist = []
         for i in routes:
             adresslist = i.adresses["adresses"]
-            print(adresslist)
-        return render(request, 'dashboard.html', context= {'routes':routes, 'adresslist': adresslist})
+            complete_adresslist.append(adresslist)
+        return render(request, 'dashboard.html', context= {'routes':routes, 'complete_adresslist': complete_adresslist})
     else:
         return redirect('index')
 

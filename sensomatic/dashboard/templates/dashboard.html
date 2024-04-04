@@ -9,11 +9,12 @@
     <p>{{adresslist}}</p>
     -->
     
-    {% for i in adresslist %}
-        <li>{{ i }}</li>
+    {% for i in complete_adresslist %}
+    {% for j in i %}
+        <li>{{ j }}</li>
     {% endfor %}
-    
-<br>
+    <br>
+    {% endfor %}
 
 
 
