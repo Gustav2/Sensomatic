@@ -1,17 +1,25 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Page Title</title>
-</head>
-<body>
 {% extends 'master.html' %}
 {% block content %}
-    <p>{{ message }}</p>
+
+<!--
+    {% for x in routes %}
+        <li>{{ x.adresses }}</li>
+    {% endfor %}
+    <br>
+    <p>{{adresslist}}</p>
+    -->
+    
+    {% for i in adresslist %}
+        <li>{{ i }}</li>
+    {% endfor %}
+    
+<br>
+
+
+
+
     <form action="{% url 'logout' %}" method="post">
         {% csrf_token %}
         <button type="submit" >Log out</button>
     </form>
 {% endblock content %}
-
-</body>
-</html>
