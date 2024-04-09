@@ -1,15 +1,14 @@
 {% extends 'master.html' %}
 {% block content %}
 
-<!--
-    {% for x in routes %}
-        <li>{{ x.adresses }}</li>
-    {% endfor %}
-    <br>
-    <p>{{adresslist}}</p>
-    -->
-    
+
     {% for i in complete_adresslist %}
+    <select>
+        <option value="Default" selected>Not assigend</option>
+        {% for l in user %}
+        <option value="{{ l }}">{{ l }}</option>
+        {% endfor %}
+     </select>
     {% for j in i %}
         <li>{{ j }}</li>
     {% endfor %}
