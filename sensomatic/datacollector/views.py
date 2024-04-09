@@ -21,7 +21,7 @@ def handle_post(request):
         trashisland = TrashIsland.objects.get(street_name="Test Street")
         trashcan = Trashcan.objects.get(island=trashisland)
 
-        SensorData.objects.create(trashcan=Trashcan.objects.get(id=1), status = 0, temperature=payload["distance"])
+        SensorData.objects.create(trashcan=Trashcan.objects.get(id=1), status = 0, distance=payload["distance"])
 
         return HttpResponse("Data received successfully.")
     else:

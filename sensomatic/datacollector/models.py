@@ -52,9 +52,8 @@ class SensorData(models.Model):
     trashcan = models.ForeignKey(Trashcan, on_delete=models.SET_NULL, null=True)
     status = models.IntegerField()
 
-    temperature = models.FloatField(null=True, blank=True)
-    humidity = models.FloatField(null=True, blank=True)
-
+    distance = models.FloatField(null=True, blank=True)
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
