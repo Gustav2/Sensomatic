@@ -29,13 +29,9 @@ def dashboard(request):
         user= User.objects.all()
         routes = Route.objects.all().filter(completed=False, operating_date=date.today())
         complete_adresslist = []
-        #compelte_uidlist = []
         for i in routes:
             adresslist = i.adresses["adresses"]
             complete_adresslist.append(adresslist)
-            #uidlist = i.uid["uid"]
-            #compelte_uidlist.append(uidlist)
-        #print(compelte_uidlist)
         return render(request, 'dashboard.html', context= {'user':user, 'complete_adresslist': complete_adresslist,})
     else:
         return redirect('index')
