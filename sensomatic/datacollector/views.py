@@ -29,7 +29,7 @@ def handle_post(request):
         """
 
         capacity = trashcan.capacity
-        fill_amount = round((float(payload["distance"]) / capacity) * 100, 2)
+        fill_amount = round((float(payload["distance" / capacity])) * 100, 2)
 
         SensorData.objects.create(trashcan=Trashcan.objects.get(id=1), distance=payload["distance"], fill_amount=fill_amount)
         trashcan.fill_amount = fill_amount
