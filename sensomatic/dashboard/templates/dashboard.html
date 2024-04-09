@@ -1,25 +1,44 @@
 {% extends 'master.html' %}
 {% block content %}
+ <!-- Her bliver ruterne hentet -->
 
-
-    {% for i in complete_adresslist %}
-    <select>
-        <option value="Default" selected>Not assigend</option>
-        {% for l in user %}
-        <option value="{{ l }}">{{ l }}</option>
+    {% for lists in complete_adresslist %}
+        <select>
+            <option value="N/A" selected>Not assigend</option>
+            {% for skraldemand in user %}
+            <option value="{{ skraldemand }}">{{ skraldemand }}</option>
+            {% endfor %}
+        </select>
+    
+        {% for adresses in lists %}
+        <ul style="list-style: none;">
+            <li>{{ adresses }}</li>
+        </ul>
         {% endfor %}
-     </select>
-    {% for j in i %}
-        <li>{{ j }}</li>
-    {% endfor %}
-    <br>
-    {% endfor %}
+        <br>
+
+        {% endfor %}
 
 
-
-
+    <!-- Her ses logud knappen -->
     <form action="{% url 'logout' %}" method="post">
         {% csrf_token %}
         <button type="submit" >Log out</button>
     </form>
+
+<script>
+async function sendCall(data){
+    const config  = {
+        method: "POST",
+        body: JSON.stringify(data)
+    }
+    fetch("/api/driverassignment", config).then(res => {
+        console.log("Kører tildelt")
+    }).catch(error =>{
+        alert('Der skete en fejl')
+    })
+}
+</script>
+
+
 {% endblock content %}
