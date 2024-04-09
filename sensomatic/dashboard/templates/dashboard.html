@@ -2,22 +2,22 @@
 {% block content %}
  <!-- Her bliver ruterne hentet -->
 
-    {% for lists in complete_adresslist %}
-        <select>
-            <option value="N/A" selected>Not assigend</option>
-            {% for skraldemand in user %}
-            <option value="{{ skraldemand }}">{{ skraldemand }}</option>
-            {% endfor %}
-        </select>
-    
-        {% for adresses in lists %}
-        <ul style="list-style: none;">
-            <li>{{ adresses }}</li>
-        </ul>
-        {% endfor %}
-        <br>
+ {% for route in routes %}
+<div>
+ <select id="{{route.id}}">
+    <option value="N/A" selected>Not assigend</option>
+    {% for skraldemand in user %}
+    <option value="{{ skraldemand }}">{{ skraldemand }}</option>
+    {% endfor %}
+</select>
 
-        {% endfor %}
+{% for adress in route.as_list %}
+<p>{{adress}}</p>
+{% endfor %}
+</div>
+<button onclick="sendCall({id:{{route.id}}, driver:document.getElementById({{route.id}}).value})">Submit</button>
+{% endfor %}
+
 
 
     <!-- Her ses logud knappen -->

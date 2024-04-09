@@ -7,12 +7,15 @@ from django.db.models import JSONField
 
 class Route(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    adresses = JSONField(blank=False, null=False)
+    adresses = models.TextField(blank=False, null=False)
     operating_date = models.DateField()
     completed = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def as_list(self):
+        return self.adresses.split(",")
 
 
 CATEGORY_CHOICES = (

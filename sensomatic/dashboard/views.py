@@ -28,11 +28,7 @@ def dashboard(request):
     if request.user.is_authenticated:
         user= User.objects.all()
         routes = Route.objects.all().filter(completed=False, operating_date=date.today())
-        complete_adresslist = []
-        for i in routes:
-            adresslist = i.adresses["adresses"]
-            complete_adresslist.append(adresslist)
-        return render(request, 'dashboard.html', context= {'user':user, 'complete_adresslist': complete_adresslist,})
+        return render(request, 'dashboard.html', context= {'routes':routes, 'user':user,})
     else:
         return redirect('index')
 
