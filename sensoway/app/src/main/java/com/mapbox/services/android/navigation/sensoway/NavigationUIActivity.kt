@@ -223,15 +223,10 @@ class NavigationUIActivity :
         val coordinates = mutableListOf<Point>()
 
         val volleyQueue = Volley.newRequestQueue(this)
-
-        // url of the api through which we get random dog images
+        
         val url = "http://127.0.0.1:8000/operations/api/get_route/"
 
-        // since the response we get from the api is in JSON,
-        // we need to use `JsonObjectRequest` for
-        // parsing the request response
         val jsonObjectRequest = JsonObjectRequest(com.android.volley.Request.Method.GET, url, null, { response ->
-                // get the image url from the JSON object
                 val res : String = response.get("route").toString()
                 res.split(";").forEach {
                     val latlng = it.split(",")
@@ -248,8 +243,6 @@ class NavigationUIActivity :
             }
         )
 
-        // add the json request object created
-        // above to the Volley request queue
         volleyQueue.add(jsonObjectRequest)
 
         Timber.tag("MainActivity").e("coordinates: %s", coordinates.toString())
