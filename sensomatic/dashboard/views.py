@@ -5,6 +5,7 @@ from django.shortcuts import redirect
 from operations.models import Route
 from django.contrib.auth.models import User
 from datetime import date
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 def index_login_page(request):
@@ -37,5 +38,11 @@ def logout_user(request):
         logout(request)
         return redirect('index')
     
-def add_driver():
-    pass #add a driver to the database
+@csrf_exempt
+def add_driver(request):
+    if  request.method=='POST':
+        driver_name = request.POST['driver']
+        route_id = request.POST['id']
+        route = Route.objects.get(id=route_id)
+        route.user = driver_name
+        route.save()

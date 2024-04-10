@@ -7,4 +7,5 @@ urlpatterns = [
     path('', views.index_login_page, name = 'index'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('logout/', views.logout_user, name='logout'),
+    path('api/driverassignment/', views.add_driver, name='add_driver'),
 ]

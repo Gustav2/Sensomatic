@@ -5,9 +5,11 @@
  {% for route in routes %}
 <div>
  <select id="{{route.id}}">
-    <option value="N/A" selected>Not assigend</option>
+    <option value="{{route.user}}" selected>{{route.user}}</option>
     {% for skraldemand in user %}
+    {% if skraldemand != route.user %}
     <option value="{{ skraldemand }}">{{ skraldemand }}</option>
+    {% endif %}
     {% endfor %}
 </select>
 
@@ -23,7 +25,7 @@
     <!-- Her ses logud knappen -->
     <form action="{% url 'logout' %}" method="post">
         {% csrf_token %}
-        <button type="submit" >Log out</button>
+        <button type="submit">Log out</button>
     </form>
 
 <script>
@@ -32,7 +34,7 @@ async function sendCall(data){
         method: "POST",
         body: JSON.stringify(data)
     }
-    fetch("/api/driverassignment", config).then(res => {
+    fetch("/api/driverassignment/", config).then(res => {
         console.log("Kører tildelt")
     }).catch(error =>{
         alert('Der skete en fejl')
