@@ -29,10 +29,12 @@ def handle_post(request):
         """
 
         capacity = trashcan.capacity
-        fill_amount = round((float(payload["distance"] / capacity)) * 100, 2)
+        empty_space = float(payload["distance"])
+        fill_amount = capacity - empty_space
+        fill_percentage = round((fill_amount / capacity) * 100, 2)
 
-        SensorData.objects.create(trashcan=Trashcan.objects.get(id=1), distance=payload["distance"], fill_amount=fill_amount)
-        trashcan.fill_amount = fill_amount
+        SensorData.objects.create(trashcan=Trashcan.objects.get(id=1), distance=payload["distance"], fill_percentage=fill_percentage)
+        trashcan.fill_percentage = fill_percentage
         trashcan.save()
 
         return HttpResponse("Data received successfully.")
