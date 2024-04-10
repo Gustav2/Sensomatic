@@ -16,8 +16,7 @@ const char* password = "password12!";
 
 // Variables for sensor data storage
 String msgCount;
-String temperature;
-String humidity;
+String distance;
 
 // JSON size
 char jsonOutput[128];
@@ -69,17 +68,16 @@ void loop() {
     // Read packet
     while (LoRa.available()) {
       String payload = LoRa.readString();
-      // payload format: msgCount#temperature/humidity
-      // String example: 45#20.94/47.22
-      Serial.print(payload); 
+      // payload format: msgCount#distance
+      // String example: 45#1900
+      Serial.println(payload); 
 
       // Read data from string
       int pos1 = payload.indexOf("#");
       int pos2 = payload.indexOf("/");
 
       msgCount = payload.substring(0, pos1);
-      temperature = payload.substring(pos1 + 1, pos2);
-      humidity = payload.substring(pos2 + 1, payload.length());
+      distance = payload.substring(pos1 + 1, payload.length());
     }
   
     // POST this to the HTTP connection
@@ -93,9 +91,8 @@ void loop() {
       StaticJsonDocument<CAPACITY> doc;
 
       JsonObject object = doc.to<JsonObject>();
-      object["sensor"] = "termometer";
-      object["temperature"] = temperature;
-      object["humidity"] = humidity;
+      object["sensor"] = "ToF Distance";
+      object["distance"] = distance;
       object["message count"] = msgCount;
 
       serializeJson(doc, jsonOutput);

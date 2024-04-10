@@ -16,13 +16,26 @@ def handle_post(request):
         payload = json.loads(request.body)
         print("Received data:", payload)
 
-        payload["temperature"]
-        payload["humidity"]
+        payload["distance"]
 
         trashisland = TrashIsland.objects.get(street_name="Test Street")
         trashcan = Trashcan.objects.get(island=trashisland)
 
-        SensorData.objects.create(trashcan=Trashcan.objects.get(id=1), status = 0, temperature=payload["temperature"], humidity=payload["humidity"])
+        """
+        **Test without this implementation and see if it works. 
+        If not:
+            Implement logic to determine the fill percentage of the container using 
+            the container designation (size of the cointainer) and the distance measures by the sensor
+        """
+
+        capacity = trashcan.capacity
+        empty_space = float(payload["distance"])
+        fill_amount = capacity - empty_space
+        fill_percentage = round((fill_amount / capacity) * 100, 2)
+
+        SensorData.objects.create(trashcan=Trashcan.objects.get(id=1), distance=payload["distance"], fill_percentage=fill_percentage)
+        trashcan.fill_percentage = fill_percentage
+        trashcan.save()
 
         return HttpResponse("Data received successfully.")
     else:

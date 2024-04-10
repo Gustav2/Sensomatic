@@ -1,6 +1,8 @@
 {% extends 'master.html' %}
 {% block content %}
     <p>{{ message }}</p>
+
+  <!-- Her ses login felterne og button som er knappen -->
     <form method="post">
         {{ form.as_p }}
         {% csrf_token %}
