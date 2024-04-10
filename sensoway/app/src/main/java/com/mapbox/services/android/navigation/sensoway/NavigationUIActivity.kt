@@ -124,6 +124,7 @@ class NavigationUIActivity :
             "Tap map to place waypoint",
             Snackbar.LENGTH_LONG,
         ).show()
+
     }
 
     @SuppressWarnings("MissingPermission")
@@ -165,6 +166,7 @@ class NavigationUIActivity :
 
     private fun calculateRoute() {
         binding.startRouteLayout.visibility = View.GONE
+        getRoutes()
         val userLocation = mapboxMap.locationComponent.lastKnownLocation // LatLng(51.43224,14.241285)
         val destination = destination
         if (userLocation == null) {
@@ -181,11 +183,11 @@ class NavigationUIActivity :
             binding.startRouteLayout.visibility = View.GONE
             return
         }
+        Timber.tag("Navigation").e("Waypoints %s", waypoints.toString())
         val navigationRouteBuilder = NavigationRoute.builder(this).apply {
             this.accessToken(getString(R.string.mapbox_access_token))
             this.origin(origin)
-            this.destination(destination)
-            for (waypoint in getRoutes()) {
+            for (waypoint in waypoints) {
                 this.addWaypoint(waypoint)
             }
             this.voiceUnits(DirectionsCriteria.METRIC)
@@ -223,18 +225,19 @@ class NavigationUIActivity :
         val coordinates = mutableListOf<Point>()
 
         val volleyQueue = Volley.newRequestQueue(this)
-        
-        val url = "http://127.0.0.1:8000/operations/api/get_route/"
+
+        val url = "http://192.168.184.54:8000/operations/api/get_route/"
 
         val jsonObjectRequest = JsonObjectRequest(com.android.volley.Request.Method.GET, url, null, { response ->
                 val res : String = response.get("route").toString()
+                Timber.tag("MainActivity").e("res %s", res)
                 res.split(";").forEach {
                     val latlng = it.split(",")
                     val lat = latlng[0]
                     val lng = latlng[1]
                     val point = Point.fromLngLat(lng.toDouble(), lat.toDouble())
 
-                    coordinates.plus(point)
+                    waypoints.add(point)
                 }
             },
             { error ->
@@ -243,16 +246,14 @@ class NavigationUIActivity :
             }
         )
 
+
         volleyQueue.add(jsonObjectRequest)
 
         Timber.tag("MainActivity").e("coordinates: %s", coordinates.toString())
 
         return coordinates
 
-
-
     }
-
 
     override fun onResume() {
         super.onResume()
