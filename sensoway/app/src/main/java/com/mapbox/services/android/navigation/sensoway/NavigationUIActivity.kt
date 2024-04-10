@@ -230,17 +230,7 @@ class NavigationUIActivity :
         // since the response we get from the api is in JSON,
         // we need to use `JsonObjectRequest` for
         // parsing the request response
-        val jsonObjectRequest = JsonObjectRequest(
-            // we are using GET HTTP request method
-            com.android.volley.Request.Method.GET,
-            // url we want to send the HTTP request to
-            url,
-            // this parameter is used to send a JSON object
-            // to the server, since this is not required in
-            // our case, we are keeping it `null`
-            null,
-
-            { response ->
+        val jsonObjectRequest = JsonObjectRequest(com.android.volley.Request.Method.GET, url, null, { response ->
                 // get the image url from the JSON object
                 val res : String = response.get("route").toString()
                 res.split(";").forEach {
@@ -251,17 +241,9 @@ class NavigationUIActivity :
 
                     coordinates.plus(point)
                 }
-                // load the image into the ImageView using Glide.
-
             },
-
-            // lambda function for handling the
-            // case when the HTTP request fails
             { error ->
-                // make a Toast telling the user
-                // that something went wrong
                 Toast.makeText(this, "Some error occurred! Cannot fetch dog image", Toast.LENGTH_LONG).show()
-                // log the error message in the error stream
                 Timber.tag("MainActivity").e("loadDogImage error: " + error.localizedMessage)
             }
         )
