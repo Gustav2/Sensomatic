@@ -5,6 +5,9 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
+import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.models.DirectionsResponse
@@ -182,7 +185,7 @@ class NavigationUIActivity :
             this.accessToken(getString(R.string.mapbox_access_token))
             this.origin(origin)
             this.destination(destination)
-            for (waypoint in waypoints) {
+            for (waypoint in getRoutes()) {
                 this.addWaypoint(waypoint)
             }
             this.voiceUnits(DirectionsCriteria.METRIC)
@@ -214,6 +217,67 @@ class NavigationUIActivity :
             }
         })
     }
+
+
+    fun getRoutes(): List<Point> {
+        val coordinates = mutableListOf<Point>()
+
+        val volleyQueue = Volley.newRequestQueue(this)
+
+        // url of the api through which we get random dog images
+        val url = "http://127.0.0.1:8000/operations/api/get_route/"
+
+        // since the response we get from the api is in JSON,
+        // we need to use `JsonObjectRequest` for
+        // parsing the request response
+        val jsonObjectRequest = JsonObjectRequest(
+            // we are using GET HTTP request method
+            com.android.volley.Request.Method.GET,
+            // url we want to send the HTTP request to
+            url,
+            // this parameter is used to send a JSON object
+            // to the server, since this is not required in
+            // our case, we are keeping it `null`
+            null,
+
+            { response ->
+                // get the image url from the JSON object
+                val res : String = response.get("route").toString()
+                res.split(";").forEach {
+                    val latlng = it.split(",")
+                    val lat = latlng[0]
+                    val lng = latlng[1]
+                    val point = Point.fromLngLat(lng.toDouble(), lat.toDouble())
+
+                    coordinates.plus(point)
+                }
+                // load the image into the ImageView using Glide.
+
+            },
+
+            // lambda function for handling the
+            // case when the HTTP request fails
+            { error ->
+                // make a Toast telling the user
+                // that something went wrong
+                Toast.makeText(this, "Some error occurred! Cannot fetch dog image", Toast.LENGTH_LONG).show()
+                // log the error message in the error stream
+                Timber.tag("MainActivity").e("loadDogImage error: " + error.localizedMessage)
+            }
+        )
+
+        // add the json request object created
+        // above to the Volley request queue
+        volleyQueue.add(jsonObjectRequest)
+
+        Timber.tag("MainActivity").e("coordinates: %s", coordinates.toString())
+
+        return coordinates
+
+
+
+    }
+
 
     override fun onResume() {
         super.onResume()
