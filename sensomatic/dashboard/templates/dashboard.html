@@ -4,6 +4,7 @@
 
  {% for route in routes %}
 <div>
+    <h2>{{route.route_name}}</h2>
  <select id="{{route.id}}">
     <option value="N/A" selected>Not assigend</option>
     <option value="{{route.user}}" selected>{{route.user}}</option>
@@ -29,13 +30,14 @@
         <button type="submit">Log out</button>
     </form>
 
+
 <script>
 async function sendCall(data){
     const config  = {
         method: "POST",
         body: JSON.stringify(data)
     }
-    fetch("/api/driverassignment/", config).then(res => {
+    fetch("{% url 'add_driver' %}", config).then(res => {
         console.log("Kører tildelt")
     }).catch(error =>{
         alert('Der skete en fejl')
