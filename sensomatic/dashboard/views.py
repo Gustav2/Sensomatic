@@ -20,7 +20,7 @@ def index_login_page(request):
                 username=form.cleaned_data['username'],
                 password=form.cleaned_data['password'],
             )
-            if user is not None:
+            if user is not None and user.is_superuser == True:
                 login(request, user)
                 return redirect('dashboard')
             else:
@@ -29,7 +29,7 @@ def index_login_page(request):
 
 def dashboard(request):
     if request.user.is_authenticated:
-        user= User.objects.all()
+        user= User.objects.filter(is_superuser=False)
         routes = Route.objects.all().filter(completed=False, operating_date=date.today())
         return render(request, 'dashboard.html', context= {'routes':routes, 'user':user,})
     else:

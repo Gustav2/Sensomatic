@@ -1,12 +1,39 @@
 {% extends 'master.html' %}
 {% block content %}
+<style>
+    .route-user-none{
+        width:10%;  
+        display:inline-block;
+        background-color: #5ad94c;
+        top: 2px; 
+        left: 2px; 
+        right: 2px; 
+        bottom: 2px; 
+        padding: 1rem; 
+        box-shadow: inset 0 0 0 2px black;
+        margin-bottom: 2em;
+    }
+
+    .route-user-none[driver-value="None"]{
+        width:10%;  
+        display:inline-block;
+        background-color: #FFF4A3;
+        top: 2px; 
+        left: 2px; 
+        right: 2px; 
+        bottom: 2px; 
+        padding: 1rem; 
+        box-shadow: inset 0 0 0 2px black;
+        margin-bottom: 2em;
+    }
+
+    </style>
  <!-- Her bliver ruterne hentet -->
 
  {% for route in routes %}
-<div>
+<div id="div-color-{{ route.id }}" class="route-user-none" driver-value="{{ route.user }}">
     <h2>{{route.route_name}}</h2>
  <select id="{{route.id}}">
-    <option value="N/A" selected>Not assigend</option>
     <option value="{{route.user}}" selected>{{route.user}}</option>
     {% for skraldemand in user %}
     {% if skraldemand != route.user %}
@@ -18,10 +45,11 @@
 {% for adress in route.as_list %}
 <p>{{adress}}</p>
 {% endfor %}
-</div>
-<button onclick="sendCall({id:{{route.id}}, driver:document.getElementById({{route.id}}).value})">Submit</button>
-{% endfor %}
 
+
+<button style="float: left;" onclick="sendCall({id:{{route.id}}, driver:document.getElementById({{route.id}}).value})">Submit</button>
+</div>
+{% endfor %}
 
 
     <!-- Her ses logud knappen -->
@@ -29,6 +57,7 @@
         {% csrf_token %}
         <button type="submit">Log out</button>
     </form>
+
 
 
 <script>
@@ -44,6 +73,7 @@ async function sendCall(data){
         alert('Der skete en fejl')
     })
 }
+
 </script>
 
 
