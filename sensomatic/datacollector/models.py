@@ -33,7 +33,7 @@ class Trashcan(models.Model):
     island = models.ForeignKey(TrashIsland, on_delete=models.SET_NULL, null=True)
     type = models.IntegerField(choices=TRASH_TYPES)
     capacity = models.IntegerField()
-    status = models.IntegerField()
+    fill_percentage = models.FloatField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -50,10 +50,9 @@ class Trashcan(models.Model):
 
 class SensorData(models.Model):
     trashcan = models.ForeignKey(Trashcan, on_delete=models.SET_NULL, null=True)
-    status = models.IntegerField()
-
     distance = models.FloatField(null=True, blank=True)
-    
+    fill_percentage = models.FloatField(null=True, blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -61,5 +60,5 @@ class SensorData(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return f'{self.trashcan} - {self.status}% full'
+        return f'{self.trashcan} - {self.fill_percentage}% full'
 

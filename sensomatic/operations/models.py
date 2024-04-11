@@ -7,6 +7,7 @@ from django.db.models import JSONField
 
 class Route(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    route_name = models.CharField(max_length=255, blank=False, null=False, default="Rute 1")
     adresses = models.TextField(blank=False, null=False)
     operating_date = models.DateField()
     completed = models.BooleanField(default=False)

@@ -5,6 +5,9 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
+import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.models.DirectionsResponse
@@ -121,6 +124,7 @@ class NavigationUIActivity :
             "Tap map to place waypoint",
             Snackbar.LENGTH_LONG,
         ).show()
+
     }
 
     @SuppressWarnings("MissingPermission")
@@ -162,6 +166,7 @@ class NavigationUIActivity :
 
     private fun calculateRoute() {
         binding.startRouteLayout.visibility = View.GONE
+        getRoutes()
         val userLocation = mapboxMap.locationComponent.lastKnownLocation // LatLng(51.43224,14.241285)
         val destination = destination
         if (userLocation == null) {
@@ -178,10 +183,10 @@ class NavigationUIActivity :
             binding.startRouteLayout.visibility = View.GONE
             return
         }
+        Timber.tag("Navigation").e("Waypoints %s", waypoints.toString())
         val navigationRouteBuilder = NavigationRoute.builder(this).apply {
             this.accessToken(getString(R.string.mapbox_access_token))
             this.origin(origin)
-            this.destination(destination)
             for (waypoint in waypoints) {
                 this.addWaypoint(waypoint)
             }
@@ -213,6 +218,41 @@ class NavigationUIActivity :
                 Timber.e(throwable, "onFailure: navigation.getRoute()")
             }
         })
+    }
+
+
+    fun getRoutes(): List<Point> {
+        val coordinates = mutableListOf<Point>()
+
+        val volleyQueue = Volley.newRequestQueue(this)
+
+        val url = "http://192.168.184.54:8000/operations/api/get_route/"
+
+        val jsonObjectRequest = JsonObjectRequest(com.android.volley.Request.Method.GET, url, null, { response ->
+                val res : String = response.get("route").toString()
+                Timber.tag("MainActivity").e("res %s", res)
+                res.split(";").forEach {
+                    val latlng = it.split(",")
+                    val lat = latlng[0]
+                    val lng = latlng[1]
+                    val point = Point.fromLngLat(lng.toDouble(), lat.toDouble())
+
+                    waypoints.add(point)
+                }
+            },
+            { error ->
+                Toast.makeText(this, "Some error occurred! Cannot fetch dog image", Toast.LENGTH_LONG).show()
+                Timber.tag("MainActivity").e("loadDogImage error: " + error.localizedMessage)
+            }
+        )
+
+
+        volleyQueue.add(jsonObjectRequest)
+
+        Timber.tag("MainActivity").e("coordinates: %s", coordinates.toString())
+
+        return coordinates
+
     }
 
     override fun onResume() {

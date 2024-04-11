@@ -43,6 +43,11 @@ public class MainActivity extends AppCompatActivity implements PermissionsListen
             getString(R.string.description_navigation_ui),
             NavigationUIActivity.class
         ));
+        list.add(new SampleItem(
+                "NavigationApiTest",
+                "NavigationApiTest",
+            NavigationApiTest.class
+        ));
         RecyclerView.Adapter adapter = new MainAdapter(list);
         recyclerView.setAdapter(adapter);
 
