@@ -5,6 +5,7 @@
  {% for route in routes %}
 <div>
  <select id="{{route.id}}">
+    <option value="N/A" selected>Not assigend</option>
     <option value="{{route.user}}" selected>{{route.user}}</option>
     {% for skraldemand in user %}
     {% if skraldemand != route.user %}

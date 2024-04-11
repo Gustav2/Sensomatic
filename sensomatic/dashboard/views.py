@@ -6,6 +6,7 @@ from operations.models import Route
 from django.contrib.auth.models import User
 from datetime import date
 from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
 
 # Create your views here.
 def index_login_page(request):
@@ -41,8 +42,12 @@ def logout_user(request):
 @csrf_exempt
 def add_driver(request):
     if  request.method=='POST':
-        driver_name = request.POST['driver']
-        route_id = request.POST['id']
+        driver_name = request.POST.get('driver')
+        print(driver_name)
+        route_id = request.POST.get('id')
+        print(route_id)
         route = Route.objects.get(id=route_id)
+        print(route)
         route.user = driver_name
         route.save()
+        
