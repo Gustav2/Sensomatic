@@ -39,6 +39,7 @@ async function sendCall(data){
     }
     fetch("{% url 'add_driver' %}", config).then(res => {
         console.log("Kører tildelt")
+        alert('Ruten er tildelt')
     }).catch(error =>{
         alert('Der skete en fejl')
     })
