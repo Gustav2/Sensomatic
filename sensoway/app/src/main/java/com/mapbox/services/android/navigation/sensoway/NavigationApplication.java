@@ -8,16 +8,26 @@ import com.mapbox.mapboxsdk.Mapbox;
 import timber.log.Timber;
 
 public class NavigationApplication extends Application {
+    private String username;
 
-  @Override
-  public void onCreate() {
-    super.onCreate();
-
-    if (BuildConfig.DEBUG) {
-      Timber.plant(new Timber.DebugTree());
+    public String getUsername() {
+        return username;
     }
 
-    Mapbox.getInstance(getApplicationContext());
-  }
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        }
+
+        Mapbox.getInstance(getApplicationContext());
+    }
 
 }

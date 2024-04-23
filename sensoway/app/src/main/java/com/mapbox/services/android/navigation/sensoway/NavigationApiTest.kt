@@ -5,25 +5,23 @@ package com.mapbox.services.android.navigation.sensoway;
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
-import android.os.StrictMode
-import android.os.StrictMode.ThreadPolicy
-import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import com.bumptech.glide.Glide
-import timber.log.Timber
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
+import com.bumptech.glide.Glide
+import timber.log.Timber
 
 
 class NavigationApiTest : AppCompatActivity() {
     private lateinit var mDogImageView: ImageView
     private lateinit var nextDogButton: Button
+    private lateinit var usernameTextView: TextView
     @RequiresApi(Build.VERSION_CODES.N)
     @SuppressLint("MissingInflatedId", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,13 +30,22 @@ class NavigationApiTest : AppCompatActivity() {
 
         mDogImageView = findViewById(R.id.dogImageView)
         nextDogButton = findViewById(R.id.nextDogButton)
+        usernameTextView = findViewById(R.id.usernameTextView)
         nextDogButton.setOnClickListener { sendRequest() }
     }
+
+    public var username = "admin"
+
 
 
     @RequiresApi(Build.VERSION_CODES.N)
     fun sendRequest() {
         val volleyQueue = Volley.newRequestQueue(this)
+
+        // Setting the username
+        // Setting the username
+        (application as NavigationApplication).username = usernameTextView.text.toString()
+
 
         // url of the api through which we get random dog images
         val url = "https://dog.ceo/api/breeds/image/random"
