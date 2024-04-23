@@ -51,4 +51,3 @@ def add_driver(request):
         route.user = driver_user
         route.save()
         return JsonResponse({'message': 'Driver assigned successfully'}, status=200)
-        
