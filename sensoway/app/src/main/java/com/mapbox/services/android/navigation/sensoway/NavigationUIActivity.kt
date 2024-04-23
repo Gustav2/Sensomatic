@@ -7,7 +7,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
-import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.models.DirectionsResponse
@@ -55,6 +54,8 @@ class NavigationUIActivity :
     private var simulateRoute = false
 
     private var waypoints = mutableListOf<Point>()
+
+
 
     @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -226,7 +227,9 @@ class NavigationUIActivity :
 
         val volleyQueue = Volley.newRequestQueue(this)
 
-        val url = "http://192.168.184.54:8000/operations/api/get_route/"
+        val username: String = (application as NavigationApplication).username
+
+        val url = "http://192.168.0.103:8000/operations/api/get_route/$username"
 
         val jsonObjectRequest = JsonObjectRequest(com.android.volley.Request.Method.GET, url, null, { response ->
                 val res : String = response.get("route").toString()
@@ -241,7 +244,7 @@ class NavigationUIActivity :
                 }
             },
             { error ->
-                Toast.makeText(this, "Some error occurred! Cannot fetch dog image", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "An error occured. Username might be wrong, or the server might be down.", Toast.LENGTH_LONG).show()
                 Timber.tag("MainActivity").e("loadDogImage error: " + error.localizedMessage)
             }
         )
