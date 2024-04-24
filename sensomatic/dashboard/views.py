@@ -30,7 +30,7 @@ def index_login_page(request):
 def dashboard(request):
     if request.user.is_authenticated:
         user= User.objects.filter(is_superuser=False)
-        routes = Route.objects.all().filter(completed=False, operating_date=date.today())
+        routes = Route.objects.filter(completed=False, operating_date=date.today())
         return render(request, 'dashboard.html', context= {'routes':routes, 'user':user,})
     else:
         return redirect('index')
@@ -44,7 +44,6 @@ def logout_user(request):
 def add_driver(request):
     if  request.method=='POST':
         data = json.loads(request.body)
-        print(data)
         driver_name = data.get('driver')
         route_id = data.get('id')
         route = Route.objects.get(id=route_id)
