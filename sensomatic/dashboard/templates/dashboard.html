@@ -34,6 +34,7 @@
 <div id="div-color-{{ route.id }}" class="route-user-none" driver-value="{{ route.user }}">
     <h2>{{route.route_name}}</h2>
  <select id="{{route.id}}">
+    <option value ="None"> None </option>
     <option value="{{route.user}}" selected>{{route.user}}</option>
     {% for skraldemand in user %}
     {% if skraldemand != route.user %}
@@ -47,7 +48,7 @@
 {% endfor %}
 
 
-<button style="float: left;" onclick="sendCall({id:{{route.id}}, driver:document.getElementById({{route.id}}).value})">Submit</button>
+<button id="submitButton", style="float: left;" onclick="sendCall({id:{{route.id}}, driver:document.getElementById({{route.id}}).value})">Submit</button>
 </div>
 {% endfor %}
 
@@ -68,7 +69,7 @@ async function sendCall(data){
     }
     fetch("{% url 'add_driver' %}", config).then(res => {
         console.log("Kører tildelt")
-        alert('Ruten er tildelt')
+        location.reload();
     }).catch(error =>{
         alert('Der skete en fejl')
     })

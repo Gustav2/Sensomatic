@@ -44,10 +44,15 @@ def logout_user(request):
 def add_driver(request):
     if  request.method=='POST':
         data = json.loads(request.body)
+        print(data)
         driver_name = data.get('driver')
         route_id = data.get('id')
-        driver_user = User.objects.get(username=driver_name)
         route = Route.objects.get(id=route_id)
-        route.user = driver_user
-        route.save()
-        return JsonResponse({'message': 'Driver assigned successfully'}, status=200)
+        if driver_name == 'None':
+            route.user = None
+            route.save()
+        else:
+            driver_user = User.objects.get(username=driver_name)
+            route.user = driver_user
+            route.save()
+    return JsonResponse({'message': 'Driver assigned successfully'}, status=200)
