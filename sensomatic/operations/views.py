@@ -7,9 +7,9 @@ from operations.models import Route
 
 # Create your views here.
 
-def get_route(request):
+def get_route(request, username=None):
     if request.method == "GET":
-        user = User.objects.get(username="admin")
+        user = User.objects.get(username=username)
         route = Route.objects.filter(user=user, completed=False).order_by("operating_date").first()
 
         if route:
