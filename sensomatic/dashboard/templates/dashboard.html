@@ -33,7 +33,17 @@
  {% for route in routes %}
 <div id="div-color-{{ route.id }}" class="route-user-none" driver-value="{{ route.user }}">
     <h2>{{route.route_name}}</h2>
+
+
  <select id="{{route.id}}">
+    {% if route.user == None %}
+    <option value="{{route.user}}" selected>{{route.user}}</option>
+    {% for skraldemand in user %}
+    {% if skraldemand != route.user %}
+    <option value="{{ skraldemand }}">{{ skraldemand }}</option>
+    {% endif %}
+    {% endfor %}
+    {% else %}
     <option value ="None"> None </option>
     <option value="{{route.user}}" selected>{{route.user}}</option>
     {% for skraldemand in user %}
@@ -41,6 +51,7 @@
     <option value="{{ skraldemand }}">{{ skraldemand }}</option>
     {% endif %}
     {% endfor %}
+    {% endif %}
 </select>
 
 {% for adress in route.coordinate_to_adress %}
