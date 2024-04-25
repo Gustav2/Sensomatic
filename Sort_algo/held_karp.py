@@ -4,95 +4,104 @@ from time import perf_counter
 
 def held_karp(dists):
     """
-    Implementation of Held-Karp, an algorithm that solves the Traveling
-    Salesman Problem using dynamic programming with memoization.
+    Held-Karp algorithm to solve the Traveling Salesman Problem (TSP)
+    using dynamic programming with memoization.
 
     Parameters:
-        dists: distance matrix
+        dists (list of lists): Distance matrix representing distances between nodes.
 
     Returns:
-        A tuple, (cost, path).
+        tuple: A tuple containing the optimal cost and the path.
     """
     n = len(dists)
 
-    # Maps each subset of the nodes to the cost to reach that subset, as well
-    # as what node it passed before reaching this subset.
-    # Node subsets are represented as set bits.
+    # Dictionary to store the cost and parent node for each subset of nodes.
+    # Node subsets are represented using set bits.
     C = {}
 
-    # Set transition cost from initial state
+    # Set transition cost from the initial state
     for k in range(1, n):
+        # For each node k, store the cost to reach k from the initial state (0) and the parent node (0)
         C[(1 << k, k)] = (dists[0][k], 0)
 
-    # Iterate subsets of increasing length and store intermediate results
-    # in classic dynamic programming manner
+    # Iterate over subsets of increasing length and store intermediate results
     for subset_size in range(2, n):
+        # Generate all combinations of nodes of size subset_size
         for subset in itertools.combinations(range(1, n), subset_size):
             # Set bits for all nodes in this subset
             bits = 0
             for bit in subset:
                 bits |= 1 << bit
 
-            # Find the lowest cost to get to this subset
+            # Find the lowest cost to reach this subset
             for k in subset:
+                # Compute the bits for the subset without node k
                 prev = bits & ~(1 << k)
 
+                # Calculate the cost to reach node k from each node m in the subset
                 res = []
                 for m in subset:
                     if m == 0 or m == k:
                         continue
+                    # Cost to reach node k = cost to reach node m + distance from m to k
                     res.append((C[(prev, m)][0] + dists[m][k], m))
+                # Store the minimum cost and the parent node for the subset and node k
                 C[(bits, k)] = min(res)
 
-    # We're interested in all bits but the least significant (the start state)
+    # Calculate the optimal cost starting from the full set of nodes
     bits = (2**n - 1) - 1
-
-    # Calculate optimal cost
     res = []
     for k in range(1, n):
+        # Cost to reach the start node (0) from node k
         res.append((C[(bits, k)][0] + dists[k][0], k))
+    # Find the minimum cost and the parent node
     opt, parent = min(res)
 
-    # Backtrack to find full path
+    # Backtrack to find the full path
     path = []
     for i in range(n - 1):
         path.append(parent)
+        # Update the bits to exclude the parent node
         new_bits = bits & ~(1 << parent)
         _, parent = C[(bits, parent)]
         bits = new_bits
 
-    # Add implicit start state
+    # Add the implicit start state
     path.append(0)
 
     return opt, list(reversed(path))
 
 def generate_distances(n):
+    """
+    Generate a random distance matrix for a given number of nodes.
+
+    Parameters:
+        n (int): Number of nodes.
+
+    Returns:
+        list of lists: Distance matrix.
+    """
     dists = [[0] * n for i in range(n)]
     for i in range(n):
         for j in range(i+1, n):
+            # Generate random distances between 1 and 99
             dists[i][j] = dists[j][i] = random.randint(1, 99)
 
     return dists
 
-def read_distances(filename):
-    dists = []
-    with open(filename, 'rb') as f:
-        for line in f:
-            # Skip comments
-            if line[0] == '#':
-                continue
+# Generate a distance matrix for 10 nodes
+distances = generate_distances(10)
 
-            dists.append(map(int, map(str.strip, line.split(','))))
-
-    return dists
-
+# Start the timer
 t1_start = perf_counter()
-result = held_karp(generate_distances(23))
+
+# Run Held-Karp algorithm on the generated distance matrix
+result = held_karp(distances)
+
+# Stop the timer
 t1_stop = perf_counter()
 
-t1_start = perf_counter()
-result = held_karp(read_distances(dist_matrix.csv))
-t1_stop = perf_counter()
-
-print(result)
-print(t1_stop-t1_start)
+# Print the result and the runtime
+print("Optimal Cost:", result[0])
+print("Optimal Path:", result[1])
+print("Runtime:", t1_stop - t1_start, "seconds")
