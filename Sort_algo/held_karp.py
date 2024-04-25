@@ -34,28 +34,24 @@ def held_karp(dists):
                 bits |= 1 << bit
 
             # Find the lowest cost to reach this subset
-            for k in subset:
-                # Compute the bits for the subset without node k
-                prev = bits & ~(1 << k)
+            for k in subset:               
+                prev = bits & ~(1 << k) # Compute the bits for the subset without node k
 
                 # Calculate the cost to reach node k from each node m in the subset
                 res = []
                 for m in subset:
                     if m == 0 or m == k:
                         continue
-                    # Cost to reach node k = cost to reach node m + distance from m to k
-                    res.append((C[(prev, m)][0] + dists[m][k], m))
-                # Store the minimum cost and the parent node for the subset and node k
-                C[(bits, k)] = min(res)
+                    res.append((C[(prev, m)][0] + dists[m][k], m)) # Cost to reach node k = cost to reach node m + distance from m to k
+                C[(bits, k)] = min(res) # Store the minimum cost and the parent node for the subset and node k
 
     # Calculate the optimal cost starting from the full set of nodes
     bits = (2**n - 1) - 1
     res = []
     for k in range(1, n):
-        # Cost to reach the start node (0) from node k
-        res.append((C[(bits, k)][0] + dists[k][0], k))
-    # Find the minimum cost and the parent node
-    opt, parent = min(res)
+        res.append((C[(bits, k)][0] + dists[k][0], k)) # Cost to reach the start node (0) from node k
+    
+    opt, parent = min(res) # Find the minimum cost and the parent node
 
     # Backtrack to find the full path
     path = []
@@ -66,8 +62,7 @@ def held_karp(dists):
         _, parent = C[(bits, parent)]
         bits = new_bits
 
-    # Add the implicit start state
-    path.append(0)
+    path.append(0) # Add the implicit start state
 
     return opt, list(reversed(path))
 
@@ -89,19 +84,16 @@ def generate_distances(n):
 
     return dists
 
-# Generate a distance matrix for 10 nodes
-distances = generate_distances(10)
+distances = generate_distances(10) # Generate a distance matrix for nodes
 
-# Start the timer
-t1_start = perf_counter()
+t1_start = perf_counter() # Start the timer
 
-# Run Held-Karp algorithm on the generated distance matrix
-result = held_karp(distances)
+result = held_karp(distances) # Run Held-Karp algorithm on the generated distance matrix
 
-# Stop the timer
-t1_stop = perf_counter()
+t1_stop = perf_counter() # Stop the timer
 
 # Print the result and the runtime
+print("Distance matrix", distances)
 print("Optimal Cost:", result[0])
 print("Optimal Path:", result[1])
 print("Runtime:", t1_stop - t1_start, "seconds")
