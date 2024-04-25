@@ -1,5 +1,5 @@
 import numpy
-from time import perf_counter_ns
+from time import perf_counter
 
 
 def nearest_neighbor(d):
@@ -15,7 +15,7 @@ def nearest_neighbor(d):
         NDarray: Sorted array containing the path.
         int: Runtime in nanoseconds.
     """
-    start_timer = perf_counter_ns() 
+    start_timer = perf_counter() 
     
     n = d.shape[0]  # Get the number of nodes
     idx = numpy.arange(n) # Create an index array [0, 1, 2, ..., n-1]
@@ -33,7 +33,7 @@ def nearest_neighbor(d):
         path[k] = last_idx # Add the nearest neighbor to the path
         mask[last_idx] = False # Update the mask to mark the nearest neighbor as visited
         
-    stop_timer = perf_counter_ns()
+    stop_timer = perf_counter()
     runtime = stop_timer-start_timer
     
     return path, runtime
