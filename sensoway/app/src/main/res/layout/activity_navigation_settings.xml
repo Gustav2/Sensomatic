@@ -8,26 +8,11 @@
     android:fitsSystemWindows="true"
     tools:context="com.mapbox.services.android.navigation.sensoway.MainActivity">
 
-
-
-    <ImageView
-        android:id="@+id/dogImageView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/nextDogButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginHorizontal="6dp"
-        android:layout_marginBottom="10dp"
-        tools:srcCompat="@tools:sample/avatars" />
-
-    <!--  This Button is used for making a new HTTP request for fetching new dog image  -->
     <Button
-        android:id="@+id/nextDogButton"
+        android:id="@+id/saveSettingsButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Next Dog"
+        android:text="Save Settings"
         android:padding="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -45,7 +30,7 @@
             android:id="@+id/usernameTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="hint" />
+            android:hint="Set Username" />
     </com.google.android.material.textfield.TextInputLayout>
 
 
