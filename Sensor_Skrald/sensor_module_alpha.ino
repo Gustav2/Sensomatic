@@ -1,8 +1,3 @@
-// To be done:
-// LoRa setup data response is not currently received
-// Implement setting up with received data once functional
-
-
 // Include required libraries
 #include <SPI.h>
 #include <LoRa.h>
@@ -41,45 +36,36 @@ void initial_setup()  {
     unsigned long waitTime = 5000;
 
     startTime = millis();
-
-    int packetSize = LoRa.parsePacket(); // Try to parse the packet
-
     while (millis() - startTime < waitTime)  {
-      if (packetSize) {
-        Serial.println("Received packet!");
-        break;
-        }
-      }
-  
-    if (packetSize) {   // When LoRa packet received
-      Serial.println("Received packet!");
-      // Read packet
-      while (LoRa.available()) {
-        String receivedSetup = LoRa.readString();
-        Serial.println(receivedSetup);
-  
-        // Read data from string
-        // Incoming format: Your UID # Current NTP time & Your transmit interval
-        int pos1 = receivedSetup.indexOf("#");
-        int pos2 = receivedSetup.indexOf("&");
-  
-        if (UID == "0"){
-          UID = receivedSetup.substring(0, pos1);
-        }
-        
-        NTP_Time = receivedSetup.substring(pos1+1, pos2);
-        interval = receivedSetup.substring(pos2+1, receivedSetup.length());     
+      
+      int packetSize = LoRa.parsePacket(); // Try to parse the packet
 
-        setupReceived = true;
-        
+      
+      if (packetSize) {   // When LoRa packet received
+        Serial.println("Received packet!");
+        // Read packet
+        while (LoRa.available()) {
+          String receivedSetup = LoRa.readString();
+          Serial.println(receivedSetup);
+    
+          // Read data from string
+          // Incoming format: Your UID # Current NTP time & Your transmit interval
+          int pos1 = receivedSetup.indexOf("#");
+          int pos2 = receivedSetup.indexOf("&");
+    
+          if (UID == "0"){
+            UID = receivedSetup.substring(0, pos1);
+          }
+          
+          NTP_Time = receivedSetup.substring(pos1+1, pos2);
+          interval = receivedSetup.substring(pos2+1, receivedSetup.length());     
+  
+          setupReceived = true; 
+          }
         }
       }
-      else {
-        Serial.println("No setupReceived, repeating...");
-        }
-        
-      delay(5000);
     }
+
     Serial.println("setupReceived successful");
     delay(1000);
   }
@@ -155,8 +141,11 @@ void setup() {
     delay(10);     // will pause Zero, Leonardo, etc until serial console opens
   }
   setup_lora();
+  delay(100);
   initial_setup();
+  delay(100);
   setup_tof();
+  delay(100);
   Serial.println("setup() successful");
 }
 
@@ -185,7 +174,7 @@ void loop() {
     // LoRa packet sending
     Serial.print("Sending packet: ");
     Serial.println(msgCount);
-    Serial.println("UID: ");
+    Serial.print("UID: ");
     Serial.println(UID);
 
     // Send packet
