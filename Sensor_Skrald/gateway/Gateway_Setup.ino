@@ -73,15 +73,40 @@ void lora_setup() {
   // This combination results in an approximate bitrate of 250 bits/second according to TTN
 }
 
+
 // Function for testing NTP functionality, remove before final
-void printLocalTime(){
-  struct tm timeinfo;
-  if(!getLocalTime(&timeinfo)){
-    Serial.println("Failed to obtain time");
-    return;
+time_t getTime()  {
+  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+  time_t now = time(nullptr);
+  while (now < 1000000000) {
+    delay(500);
+    now = time(nullptr);
   }
-  Serial.println(&timeinfo);
+  return now;
 }
+
+void setupResponse() {
+  // Ask for UID data from the server
+  Serial.println("Setup request received");
+
+  time_t currentTime = getTime();
+  String(unixTime) = String(currentTime);
+  Serial.println(unixTime);
+
+  String(outbound) = String(UID) + "#" + String(unixTime) + "&" + String(transmit_interval);
+
+  delay(2000);
+
+  Serial.print("Current outbound String: ");
+  Serial.println(outbound);
+  
+  LoRa.beginPacket();
+  LoRa.print(outbound);
+  LoRa.endPacket();
+
+  Serial.println("Outbound package sent");
+}
+
 
 void setup() {
   Serial.begin(115200);
@@ -89,8 +114,6 @@ void setup() {
     ;
 
   wifi_setup();
-  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
-  printLocalTime();   // Time test function, remove before final
   lora_setup();
 }
  
@@ -106,26 +129,7 @@ void loop() {
       Serial.println(payload); 
 
       if (String(payload[0]) == "@") {
-        // Ask for UID data from the server
-        Serial.println("Setup request received");
-        
-        // Get the current time
-        time_t now;
-        time(&now);
-
-        String(outbound) = String(UID) + "#" + String(ctime(&now)) + "&" + String(transmit_interval);
-
-        delay(2000);
-      
-        Serial.print("Current outbound String: ");
-        Serial.println(outbound);
-        
-        LoRa.beginPacket();
-        LoRa.print(outbound);
-        LoRa.endPacket();
-
-        Serial.println("Outbound package sent");
-        
+        setupResponse();
       }
 
       else {
@@ -161,7 +165,9 @@ void loop() {
     
             
           String response = http.getString();       // Get response and print in Serial
+          Serial.print("httpResponseCode: ");
           Serial.println(httpResponseCode);
+          Serial.print("response: ");
           Serial.println(response);
         
           http.end();   // Ends HTTP to free resources
