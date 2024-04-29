@@ -1,6 +1,7 @@
 // Include required libraries
 #include <SPI.h>
 #include <LoRa.h>
+#include <WiFi.h>
 #include "Adafruit_VL53L1X.h"
 
 #define IRQ_PIN 18
@@ -13,8 +14,7 @@ const int csPin = 0;     // LoRa radio chip select
 const int resetPin = 1;  // LoRa radio reset
 const int irqPin = 2;    // Must be a hardware interrupt pin
 
-String UID = "0";
-String NTP_Time;
+String UID = WiFi.macAddress();
 String interval;
 
 bool setupReceived = false; // Flag for ascertaining whether setup data has been received
@@ -23,10 +23,14 @@ bool setupReceived = false; // Flag for ascertaining whether setup data has been
 byte msgCount = 0;
 
 void initial_setup()  {
+  // This function runs the first time the ESP is active without any settings collected from the gateway
+  
   while (!setupReceived)  {    
     // Requests setup data
     LoRa.beginPacket();
     LoRa.print("@requestSetup");
+    LoRa.print("#");
+    LoRa.print(WiFi.macAddress());
     LoRa.endPacket();
     Serial.println("@requestSetup package sent!");
     
@@ -39,8 +43,6 @@ void initial_setup()  {
     while (millis() - startTime < waitTime)  {
       
       int packetSize = LoRa.parsePacket(); // Try to parse the packet
-
-      
       if (packetSize) {   // When LoRa packet received
         Serial.println("Received packet!");
         // Read packet
@@ -49,26 +51,36 @@ void initial_setup()  {
           Serial.println(receivedSetup);
     
           // Read data from string
-          // Incoming format: Your UID # Current NTP time & Your transmit interval
-          int pos1 = receivedSetup.indexOf("#");
-          int pos2 = receivedSetup.indexOf("&");
-    
-          if (UID == "0"){
-            UID = receivedSetup.substring(0, pos1);
-          }
+          // Incoming format: ?responseSetup&requestUID%currentTime#transmitInterval
           
-          NTP_Time = receivedSetup.substring(pos1+1, pos2);
-          interval = receivedSetup.substring(pos2+1, receivedSetup.length());     
-  
-          setupReceived = true; 
+          int pos1 = receivedSetup.indexOf("&");
+          int pos2 = receivedSetup.indexOf("%");
+          int pos3 = receivedSetup.indexOf("#");
+          
+          String responseUID = receivedSetup.substring(pos1+1, pos2);
+
+          Serial.print("Personal UID: ");
+          Serial.println(UID);
+          Serial.println("Received UID: ");
+          Serial.println(responseUID);
+
+          
+          if (responseUID == UID) {
+            String unixTime = receivedSetup.substring(pos2+1, pos3);
+            String interval = receivedSetup.substring(pos3+1, receivedSetup.length());
+
+            Serial.println("Data for UID received");
+            setupReceived = true;
+            }
+            
+          else {Serial.println("Data for other UID received, repeating...");}
           }
         }
       }
     }
-
     Serial.println("setupReceived successful");
     delay(1000);
-  }
+ }
 
 
 void setup_lora() {
