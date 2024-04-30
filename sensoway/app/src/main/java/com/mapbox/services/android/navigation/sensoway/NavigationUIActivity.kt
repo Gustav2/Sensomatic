@@ -188,7 +188,7 @@ class NavigationUIActivity :
             this.alternatives(true)
             this.destination(destination)
             this.user("gh")
-            this.profile("car")
+            this.profile("truck")
             this.baseUrl(getString(R.string.base_url))
         }
 
