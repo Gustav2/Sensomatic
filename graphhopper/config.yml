@@ -39,7 +39,7 @@ graphhopper:
       turn_costs: true
       vehicle_types: [ hgv, motorcar, motor_vehicle ]
       weighting: custom
-      custom_model_files: [ truck.json ]
+      custom_model_files: [ custom_truck.json ]
 
 
 #    - name: bike
