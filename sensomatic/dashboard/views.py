@@ -59,3 +59,17 @@ def add_driver(request):
             route.user = driver_user
             route.save()
     return JsonResponse({'message': 'Driver assigned successfully'}, status=200)
+
+def setting(request):
+    pass
+
+def historik(request):
+    user= User.objects.filter(is_superuser=False)
+    routes = Route.objects.exclude(operating_date = date.today())
+    return render(request, 'historik.html', context= {'routes':routes, 'user':user,})
+
+def storskrald(request):
+    pass
+
+def skaldeniveau(request):
+    pass
