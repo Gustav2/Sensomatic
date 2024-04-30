@@ -5,7 +5,7 @@ After=network.target
 [Service]
 Type=simple
 User=jetson
-ExecStart=/home/jetson/Sensomatic/start_routing.sh
+ExecStart=/home/jetson/Sensomatic/graphhopper/start_routing.sh
 Restart=on-failure
 
 [Install]
