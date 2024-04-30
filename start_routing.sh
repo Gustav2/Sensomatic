@@ -1,2 +1,2 @@
 #!/bin/bash
-/usr/bin/java -D"dw.graphhopper.datareader.file=/home/jetson/graphhopper/den.pbf" -jar /home/jetson/graphhopper/graphhopper*.jar server /home/jetson/graphhopper/config-example.yml
+/usr/bin/java -jar /home/jetson/graphhopper/graphhopper*.jar server /home/jetson/Sensomatic/config.yml
