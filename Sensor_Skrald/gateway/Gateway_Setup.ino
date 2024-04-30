@@ -31,7 +31,7 @@ String msgCount;
 String distance;
 
 int NTP;
-int transmitInterval;
+int transmitInterval = 10000;
 
 // JSON size
 char jsonOutput[128];
