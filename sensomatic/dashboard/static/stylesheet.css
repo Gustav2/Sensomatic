@@ -1,0 +1,88 @@
+    .parent {
+        display: flex;
+    }
+
+
+    .route-user-none{
+        width:10%;  
+        display:inline-block;
+        background-color: #54c847;
+        top: 2px; 
+        left: 2px; 
+        right: 2px; 
+        bottom: 2px; 
+        padding: 1rem; 
+        box-shadow: inset 0 0 0 2px black;
+        margin-bottom: 0 10px;
+        margin-right: 10px;
+        flex: 0.15;
+    }
+
+    .route-user-none[driver-value="None"]{
+        width:10%;  
+        display:inline-block;
+        background-color: #FFF4A3;
+        top: 2px; 
+        left: 2px; 
+        right: 2px; 
+        bottom: 2px; 
+        padding: 1rem; 
+        box-shadow: inset 0 0 0 2px black;
+        margin-bottom: 0 10px;
+        margin-right: 10px;
+        flex: 0.15;
+    }
+
+    .sidenav {
+        width: 170px;
+        position: fixed;
+        z-index: 1;
+        top: 20px;
+        left: 10px;
+        background: #eee;
+        overflow-x: hidden;
+        padding: 8px 0;
+        margin-right: 10px;
+      }
+      
+      .sidenav a {
+        padding: 6px 8px 6px 16px;
+        text-decoration: none;
+        font-size: 25px;
+        color: #2196F3;
+        display: block;
+      }
+      
+      .sidenav a:hover {
+        color: #064579;
+      }
+      
+      .header {
+        margin-left: 180px; 
+        font-size: 20px; 
+        background-color: #F1F1F1;
+        text-align: center;
+        padding: 20px;
+        margin-bottom: 10px;
+      }
+      
+      @media screen and (max-height: 450px) {
+        .sidenav {padding-top: 15px;}
+        .sidenav a {font-size: 18px;}
+      }
+
+      .main {
+        margin-left: 180px;
+        padding: 0px 10px; 
+      }
+
+      .historyBoxes{
+        background-color: white;
+        padding: 0.01px;
+        text-align: center;
+      }
+
+      .siteHeader{
+        text-align: left;
+        font-size: 30px;
+      }
