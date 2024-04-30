@@ -4,7 +4,7 @@
     .route-user-none{
         width:10%;  
         display:inline-block;
-        background-color: #5ad94c;
+        background-color: #54c847;
         top: 2px; 
         left: 2px; 
         right: 2px; 
@@ -34,7 +34,7 @@
 <div id="div-color-{{ route.id }}" class="route-user-none" driver-value="{{ route.user }}">
     <h2>{{route.route_name}}</h2>
 
-
+ <!-- Her oprettes dropdown menuen -->
  <select id="{{route.id}}">
     {% if route.user == None %}
     <option value="{{route.user}}" selected>{{route.user}}</option>
@@ -54,11 +54,12 @@
     {% endif %}
 </select>
 
+ <!-- Her kaldes funktionen fra route klassen -->
 {% for adress in route.coordinate_to_adress %}
 <p>{{adress}}</p>
 {% endfor %}
 
-
+ <!-- Her sendes køreren til databasen -->
 <button id="submitButton", style="float: left;" onclick="sendCall({id:{{route.id}}, driver:document.getElementById({{route.id}}).value})">Submit</button>
 </div>
 {% endfor %}
@@ -71,7 +72,7 @@
     </form>
 
 
-
+ <!-- Dette javascript sender requesten til API'en med dataet -->
 <script>
 async function sendCall(data){
     const config  = {

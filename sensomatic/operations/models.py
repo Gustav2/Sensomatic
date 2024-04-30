@@ -6,6 +6,7 @@ from geopy.geocoders import Nominatim
 
 # Create your models here.
 
+# Her oprettes rute tabellen
 class Route(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     route_name = models.CharField(max_length=255, blank=False, null=False, default="Rute 1")
@@ -16,7 +17,7 @@ class Route(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
-
+# Denne funktion henter coordinaterne og ændre de første og sidste til adresser
     def coordinate_to_adress(self):
         geolocator = Nominatim(user_agent="Chrome/122.0.0.0")
         adress_list =[]
@@ -52,7 +53,7 @@ CATEGORY_CHOICES = (
     (3, "Andet"),
 )
 
-
+# Her oprettes en tabel for areamaintenance
 class AreaMaintenance(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     island = models.ForeignKey('datacollector.TrashIsland', on_delete=models.SET_NULL, null=True)
