@@ -30,9 +30,8 @@ const int daylightOffset_sec = 3600;
 String msgCount;
 String distance;
 
-String UID = "42";
 int NTP;
-int transmit_interval;
+int transmitInterval;
 
 // JSON size
 char jsonOutput[128];
@@ -74,7 +73,7 @@ void lora_setup() {
 }
 
 
-// Function for testing NTP functionality, remove before final
+// Function for getting current time in UNIX format
 time_t getTime()  {
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
   time_t now = time(nullptr);
@@ -84,29 +83,6 @@ time_t getTime()  {
   }
   return now;
 }
-
-void setupResponse() {
-  // Ask for UID data from the server
-  Serial.println("Setup request received");
-
-  time_t currentTime = getTime();
-  String(unixTime) = String(currentTime);
-  Serial.println(unixTime);
-
-  String(outbound) = String(UID) + "#" + String(unixTime) + "&" + String(transmit_interval);
-
-  delay(2000);
-
-  Serial.print("Current outbound String: ");
-  Serial.println(outbound);
-  
-  LoRa.beginPacket();
-  LoRa.print(outbound);
-  LoRa.endPacket();
-
-  Serial.println("Outbound package sent");
-}
-
 
 void setup() {
   Serial.begin(115200);
@@ -129,7 +105,26 @@ void loop() {
       Serial.println(payload); 
 
       if (String(payload[0]) == "@") {
-        setupResponse();
+        Serial.println("Setup request received");
+        int pos1 = payload.indexOf("#");
+        
+        String requestUID = payload.substring(pos1+1, payload.length());
+        
+        time_t currentTime = getTime();
+        Serial.println(currentTime);
+      
+        String(outbound) = "?responseSetup&" + String(requestUID) + "%" + String(currentTime) + "#" + String(transmitInterval);
+      
+        delay(2000);
+      
+        Serial.print("Current outbound String: ");
+        Serial.println(outbound);
+        
+        LoRa.beginPacket();
+        LoRa.print(outbound);
+        LoRa.endPacket();
+      
+        Serial.println("Outbound package sent");
       }
 
       else {
@@ -138,7 +133,7 @@ void loop() {
         int pos1 = payload.indexOf("#");
         int pos2 = payload.indexOf("/");
     
-        UID = payload.substring(0, pos1);
+        String MAC = payload.substring(0, pos1);
         distance = payload.substring(pos1+1, pos2);
         msgCount = payload.substring(pos2+1, payload.length());
       
@@ -153,7 +148,7 @@ void loop() {
           StaticJsonDocument<CAPACITY> doc;
     
           JsonObject object = doc.to<JsonObject>();
-          object["sensor"] = "ToF Distance";
+          object["MAC"] = MAC;
           object["distance"] = distance;
           object["message count"] = msgCount;
           object["rssi"] = LoRa.packetRssi();
