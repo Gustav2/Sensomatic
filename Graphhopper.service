@@ -3,8 +3,8 @@ Description=Run the Graphhopper routing engine
 After=network.target
 
 [Service]
-Type=simple
-ExecStart=/usr/bin/java -D"dw.graphhopper.datareader.file=/home/jetson/graphhopper/den.pbf" -jar /home/jetson/graphhopper/graphhopper*.jar server /home/jetson/graphhopper/config-example.yml
+Type=oneshot
+ExecStart=/usr/bin/bash /home/jetson/Sensomatic/start_routing.sh
 Restart=on-failure
 
 [Install]
