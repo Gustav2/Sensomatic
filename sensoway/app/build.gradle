@@ -45,10 +45,17 @@ android {
 }
 
 dependencies {
-    implementation 'com.github.maplibre:maplibre-navigation-android:3.0.0'
+    implementation('com.github.maplibre:maplibre-navigation-android:3.0.0') {
+        //exclude group: 'com.mapbox'
+        //exclude group: 'com.mapbox.mapboxsdk'
+
+    }
     implementation(dependenciesList.mapLibre) {
-        exclude group: 'com.mapbox.mapboxsdk', module: 'mapbox-sdk-geojson'
-        exclude group: 'com.mapbox.mapboxsdk', module: 'mapbox-sdk-turf'
+        //exclude group: 'com.mapbox'
+        //exclude group: 'com.mapbox.mapboxsdk'
+    }
+    implementation("com.mapbox.navigationcore:ui-components:3.0.1") {
+        exclude group: 'com.mapbox.mapboxsdk'
     }
 
     // Support libraries

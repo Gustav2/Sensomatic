@@ -1,6 +1,7 @@
 // Include required libraries
 #include <SPI.h>
 #include <LoRa.h>
+#include <WiFi.h>
 #include "Adafruit_VL53L1X.h"
 
 #define IRQ_PIN 18
@@ -13,8 +14,74 @@ const int csPin = 0;     // LoRa radio chip select
 const int resetPin = 1;  // LoRa radio reset
 const int irqPin = 2;    // Must be a hardware interrupt pin
 
+String UID = WiFi.macAddress();
+String interval;
+
+bool setupReceived = false; // Flag for ascertaining whether setup data has been received
+
 // Message counter
 byte msgCount = 0;
+
+void initial_setup()  {
+  // This function runs the first time the ESP is active without any settings collected from the gateway
+  
+  while (!setupReceived)  {    
+    // Requests setup data
+    LoRa.beginPacket();
+    LoRa.print("@requestSetup");
+    LoRa.print("#");
+    LoRa.print(WiFi.macAddress());
+    LoRa.endPacket();
+    Serial.println("@requestSetup package sent!");
+    
+    delay(1000);
+    
+    unsigned long startTime;
+    unsigned long waitTime = 5000;
+
+    startTime = millis();
+    while (millis() - startTime < waitTime)  {
+      
+      int packetSize = LoRa.parsePacket(); // Try to parse the packet
+      if (packetSize) {   // When LoRa packet received
+        Serial.println("Received packet!");
+        // Read packet
+        while (LoRa.available()) {
+          String receivedSetup = LoRa.readString();
+          Serial.println(receivedSetup);
+    
+          // Read data from string
+          // Incoming format: ?responseSetup&requestUID%currentTime#transmitInterval
+          
+          int pos1 = receivedSetup.indexOf("&");
+          int pos2 = receivedSetup.indexOf("%");
+          int pos3 = receivedSetup.indexOf("#");
+          
+          String responseUID = receivedSetup.substring(pos1+1, pos2);
+
+          Serial.print("Personal UID: ");
+          Serial.println(UID);
+          Serial.println("Received UID: ");
+          Serial.println(responseUID);
+
+          
+          if (responseUID == UID) {
+            String unixTime = receivedSetup.substring(pos2+1, pos3);
+            String interval = receivedSetup.substring(pos3+1, receivedSetup.length());
+
+            Serial.println("Data for UID received");
+            setupReceived = true;
+            }
+            
+          else {Serial.println("Data for other UID received, repeating...");}
+          }
+        }
+      }
+    }
+    Serial.println("setupReceived successful");
+    delay(1000);
+ }
+
 
 void setup_lora() {
   // Setup LoRa module
@@ -23,7 +90,7 @@ void setup_lora() {
   Serial.println("LoRa Receiver Test");
  
   // Start LoRa module at local frequency
-  // 433E6 for Asia
+  // 433E6 for Europe
   // 866E6 for Europe
   // 915E6 for North America
  
@@ -32,6 +99,16 @@ void setup_lora() {
     while (1)
       ;
   }
+
+  // Set spreading factor to highest
+  LoRa.setSpreadingFactor(12);
+
+  // Set signal bandwith. Must be 125 kHz or 250 kHz in Europe
+  LoRa.setSignalBandwidth(125E3);
+
+  // This combination results in an approximate bitrate of 250 bits/second according to TTN
+
+  Serial.println("setup_lora() successful");
 }
 
 void setup_tof() {
@@ -64,6 +141,9 @@ void setup_tof() {
   vl.VL53L1X_SetDistanceThreshold(100, 300, 3, 1);
   vl.VL53L1X_SetInterruptPolarity(0);
   */
+
+  Serial.println("setup_tof() successful");
+
 }
 
 void setup() {
@@ -72,9 +152,13 @@ void setup() {
   while (!Serial) {
     delay(10);     // will pause Zero, Leonardo, etc until serial console opens
   }
-    
   setup_lora();
+  delay(100);
+  initial_setup();
+  delay(100);
   setup_tof();
+  delay(100);
+  Serial.println("setup() successful");
 }
 
 void loop() {
@@ -96,11 +180,14 @@ void loop() {
 
     // LoRa transmission part
     // Create payload for packet
-    String payload = String(msgCount) + "#" + String(distance) ;
+    // Format "UID#distance/msgCount
+    String payload = String(UID) + "#" + String(distance) + "/" + String(msgCount);
 
     // LoRa packet sending
     Serial.print("Sending packet: ");
     Serial.println(msgCount);
+    Serial.print("UID: ");
+    Serial.println(UID);
 
     // Send packet
     LoRa.beginPacket();

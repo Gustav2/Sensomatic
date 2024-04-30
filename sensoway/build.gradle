@@ -7,6 +7,8 @@ buildscript {
     google()
     mavenCentral()
     maven { url 'https://plugins.gradle.org/m2' }
+
+
   }
 
   dependencies {
@@ -28,6 +30,19 @@ allprojects {
     google()
     maven { url 'https://plugins.gradle.org/m2' }
     maven { url 'https://jitpack.io' }
+    maven {
+      url 'https://api.mapbox.com/downloads/v2/releases/maven'
+      authentication {
+        basic(BasicAuthentication)
+      }
+      credentials {
+        // Do not change the username below.
+        // This should always be `mapbox` (not your username).
+        username = "mapbox"
+        // Use the secret token you stored in gradle.properties as the password
+        password = "sk.eyJ1IjoiZ3VzdGF2MiIsImEiOiJjbHZkbXNkcGYwMGVmMmpvNG5lY29ndTA1In0.q1F4BJ9KpXTiDFYYD6G6hg"
+      }
+    }
   }
 
   group = GROUP

@@ -36,7 +36,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.mapbox.services.android.navigation.sensoway.NavigationApiTest"
+            android:name="com.mapbox.services.android.navigation.sensoway.NavigationSettings"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

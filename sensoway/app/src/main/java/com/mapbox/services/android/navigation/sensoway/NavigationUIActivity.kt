@@ -151,15 +151,9 @@ class NavigationUIActivity :
     }
 
     override fun onMapClick(point: LatLng): Boolean {
-        var addMarker = true
-        when {
-            destination == null -> destination = Point.fromLngLat(point.longitude, point.latitude)
-        }
-        waypoints.add(Point.fromLngLat(point.longitude, point.latitude))
-
-        if (addMarker) {
-            mapboxMap.addMarker(MarkerOptions().position(point))
-            binding.clearPoints.visibility = View.VISIBLE
+        getRoutes()
+        if (destination == null) {
+            return true
         }
         calculateRoute()
         return true
@@ -167,7 +161,6 @@ class NavigationUIActivity :
 
     private fun calculateRoute() {
         binding.startRouteLayout.visibility = View.GONE
-        getRoutes()
         val userLocation = mapboxMap.locationComponent.lastKnownLocation // LatLng(51.43224,14.241285)
         val destination = destination
         if (userLocation == null) {
@@ -193,6 +186,7 @@ class NavigationUIActivity :
             }
             this.voiceUnits(DirectionsCriteria.METRIC)
             this.alternatives(true)
+            this.destination(destination)
             this.user("gh")
             this.profile("car")
             this.baseUrl(getString(R.string.base_url))
@@ -242,6 +236,7 @@ class NavigationUIActivity :
 
                     waypoints.add(point)
                 }
+            destination = waypoints.last()
             },
             { error ->
                 Toast.makeText(this, "An error occured. Username might be wrong, or the server might be down.", Toast.LENGTH_LONG).show()
@@ -252,7 +247,6 @@ class NavigationUIActivity :
 
         volleyQueue.add(jsonObjectRequest)
 
-        Timber.tag("MainActivity").e("coordinates: %s", coordinates.toString())
 
         return coordinates
 
