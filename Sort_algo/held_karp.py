@@ -115,7 +115,30 @@ def get_dist_p2p(start_latitude, start_longitude, end_latitude, end_longitude):
     data_select = data_string[13:21] # select distance in meters from str
     return(data_select)
 
+def select_coordinates(file_path_input):
+    file_path = file_path_input
+    list_of_lists = []
+    with open(file_path, 'r') as file:
+        for line in file:
+            list_of_lists.append(line.strip().split(','))
+    return list_of_lists
 
+def make_dist_matrix():
+    master_coordinate_list = select_coordinates("Sort_algo\coordinates.txt")
+    print(len(master_coordinate_list))
+    for i, element in enumerate(master_coordinate_list):
+        for n in range(len(master_coordinate_list)):
+            point_start = master_coordinate_list[i-1]
+            point_end = master_coordinate_list[n-1]
+            #start_latitude, start_longitude, end_latitude, end_longitude
+            start_latitude = point_start[0]
+            start_longitude = point_start[1]
+            end_latitude = point_end[0]
+            end_longitude = point_end[1]
+            print(f"n: {n}, i: {i}: {start_latitude}, {start_longitude}, {end_latitude}, {end_longitude}")
+    
+
+make_dist_matrix()
 
 distances = generate_distances(10) # Generate a distance matrix for nodes
 
@@ -124,9 +147,6 @@ t1_start = perf_counter() # Start the timer
 result = held_karp(distances) # Run Held-Karp algorithm on the generated distance matrix
 
 t1_stop = perf_counter() # Stop the timer
-
-f = open("Sort_algo\coordinates.txt", "r")
-print(f.read())
 
 # Print the result and the runtime
 #print("Distance matrix", distances)

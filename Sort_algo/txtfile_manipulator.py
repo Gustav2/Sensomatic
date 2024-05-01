@@ -46,9 +46,9 @@ def remove_commas(file_path):
     with open(file_path, 'w') as file:
         file.writelines(modified_lines)
 
+def run(file_path_input):
+    file_path = file_path_input
 
-file_path = "Sort_algo\coordinates.txt"
-
-remove_brackets(file_path)
-insert_newlines(file_path)
-remove_commas(file_path)
+    remove_brackets(file_path)
+    insert_newlines(file_path)
+    remove_commas(file_path)
