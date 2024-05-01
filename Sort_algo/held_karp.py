@@ -85,7 +85,7 @@ def generate_distances(n):
 
     return dists
 
-#latitude(north(+), south(-)), longitude(east(+), west(-)) -> when (+) no indicator only if (-)
+# latitude(north(+), south(-)), longitude(east(+), west(-)) -> when (+) no indicator only if (-)
 def get_dist_p2p(start_latitude, start_longitude, end_latitude, end_longitude):
     url = "https://faauzite.com/route"
     query = {
@@ -115,7 +115,7 @@ def get_dist_p2p(start_latitude, start_longitude, end_latitude, end_longitude):
     data_select = data_string[13:21] # select distance in meters from str
     return(data_select)
 
-    
+
 
 distances = generate_distances(10) # Generate a distance matrix for nodes
 
@@ -125,7 +125,8 @@ result = held_karp(distances) # Run Held-Karp algorithm on the generated distanc
 
 t1_stop = perf_counter() # Stop the timer
 
-print(distances)
+f = open("Sort_algo\coordinates.txt", "r")
+print(f.read())
 
 # Print the result and the runtime
 #print("Distance matrix", distances)
