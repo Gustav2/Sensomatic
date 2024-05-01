@@ -1,6 +1,7 @@
 import itertools
 import random
 from time import perf_counter
+import requests
 
 def held_karp(dists):
     """
@@ -84,6 +85,38 @@ def generate_distances(n):
 
     return dists
 
+#latitude(north(+), south(-)), longitude(east(+), west(-)) -> when (+) no indicator only if (-)
+def get_dist_p2p(start_latitude, start_longitude, end_latitude, end_longitude):
+    url = "https://faauzite.com/route"
+    query = {
+    "key": "YOUR_API_KEY_HERE"
+    }
+    payload = {
+    "profile": "car",
+    "points": [
+        [
+            start_longitude,
+            start_latitude
+        
+        ],
+        [
+            end_longitude,
+            end_latitude
+        
+        ]
+    ]
+    }
+    
+    headers = {"Content-Type": "application/json"}
+    response = requests.post(url, json=payload, headers=headers, params=query)
+    data = response.json() # data is dict type
+    data_list = data.get("paths") # get data in list type
+    data_string = "".join(str(x) for x in data_list) # convert list -> str
+    data_select = data_string[13:21] # select distance in meters from str
+    return(data_select)
+
+    
+
 distances = generate_distances(10) # Generate a distance matrix for nodes
 
 t1_start = perf_counter() # Start the timer
@@ -92,8 +125,10 @@ result = held_karp(distances) # Run Held-Karp algorithm on the generated distanc
 
 t1_stop = perf_counter() # Stop the timer
 
+print(distances)
+
 # Print the result and the runtime
-print("Distance matrix", distances)
-print("Optimal Cost:", result[0])
-print("Optimal Path:", result[1])
-print("Runtime:", t1_stop - t1_start, "seconds")
+#print("Distance matrix", distances)
+#print("Optimal Cost:", result[0])
+#print("Optimal Path:", result[1])
+#print("Runtime:", t1_stop - t1_start, "seconds")

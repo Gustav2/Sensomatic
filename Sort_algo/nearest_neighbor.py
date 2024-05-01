@@ -1,5 +1,6 @@
 import numpy
 from time import perf_counter
+import requests
 
 
 def nearest_neighbor(d):
@@ -13,7 +14,7 @@ def nearest_neighbor(d):
 
     Returns:
         NDarray: Sorted array containing the path.
-        int: Runtime in nanoseconds.
+        int: Runtime in seconds.
     """
     start_timer = perf_counter() 
     
@@ -39,7 +40,33 @@ def nearest_neighbor(d):
     return path, runtime
 
 
-graph = numpy.random.rand(100,100)
+url = "https://faauzite.com/route"
+query = {
+  "key": "YOUR_API_KEY_HERE"
+}
+payload = {
+  "profile": "car",
+  "points": [
+    [
+        9.944435,
+        57.029577
+     
+    ],
+    [
+        9.984215,
+        57.015399
+      
+    ]
+  ]
+}
+headers = {"Content-Type": "application/json"}
+response = requests.post(url, json=payload, headers=headers, params=query)
+data = response.json() # data is dict type
+data_list = data.get("paths") # get data in list type
+data_string = "".join(str(x) for x in data_list) #convert list -> str
+data_select = data_string[13:21] # select distance in meters
+print(data_select)
 
-print(nearest_neighbor(graph))
-#print(graph2)
+#graph = numpy.random.rand(100,100)
+
+#print(nearest_neighbor(graph))
