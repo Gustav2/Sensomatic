@@ -37,8 +37,7 @@ graphhopper:
 #      turn_costs: true
 #      u_turn_costs: 60
     - name: truck
-      turn_costs:
-        restrictions: [motorcar, motor_vehicle]
+      turn_costs: true
       u_turn_costs: 9999
       vehicle_types: [ hgv, motorcar, motor_vehicle ]
       weighting: custom
