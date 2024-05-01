@@ -188,7 +188,7 @@ class NavigationUIActivity :
             this.alternatives(true)
             this.destination(destination)
             this.user("gh")
-            this.profile("car")
+            this.profile("truck")
             this.baseUrl(getString(R.string.base_url))
         }
 
@@ -223,7 +223,7 @@ class NavigationUIActivity :
 
         val username: String = (application as NavigationApplication).username
 
-        val url = "http://192.168.0.103:8000/operations/api/get_route/$username"
+        val url = "https://api.faauzite.com/operations/api/get_route/$username"
 
         val jsonObjectRequest = JsonObjectRequest(com.android.volley.Request.Method.GET, url, null, { response ->
                 val res : String = response.get("route").toString()

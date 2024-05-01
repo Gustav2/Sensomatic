@@ -1,0 +1,27 @@
+{% extends 'master.html' %}
+{% block content %}
+
+ <!-- Her bliver ruterne hentet -->
+<h3 class="siteHeader">Historik</h3>
+<div class="parent">
+ {% for route in routes %}
+<div id="div-color-{{ route.id }}" class="route-user-none" driver-value="{{ route.user }}">
+    <h2>{{route.route_name}}</h2>
+
+ <!-- Her oprettes dropdown menuen -->
+ <div class="historyBoxes">
+    <p>{{route.user}}</p>
+ </div>
+
+ <!-- Her kaldes funktionen fra route klassen -->
+{% for adress in route.coordinate_to_adress %}
+<p>{{adress}}</p>
+{% endfor %}
+
+</div>
+
+{% endfor %}
+</div>
+
+
+{% endblock content %}

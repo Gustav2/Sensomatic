@@ -1,11 +1,13 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import JSONField
-from geopy.geocoders import Nominatim
+#from geopy.geocoders import Nominatim
+
 
 
 # Create your models here.
 
+# Her oprettes rute tabellen
 class Route(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     route_name = models.CharField(max_length=255, blank=False, null=False, default="Rute 1")
@@ -16,13 +18,13 @@ class Route(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
-
+# Denne funktion henter coordinaterne og ændre de første og sidste til adresser
     def coordinate_to_adress(self):
-        geolocator = Nominatim(user_agent="Chrome/122.0.0.0")
+        #geolocator = Nominatim(user_agent="Chrome/122.0.0.0")
         adress_list =[]
         first_coordinate=self.adresses.split(";",1)[0]
         last_coordinate=self.adresses.rsplit(";",1)[1]
-
+        """
         first_adress = geolocator.reverse(first_coordinate)
         raw_firstadress = first_adress.raw
         first_adress_split = raw_firstadress['display_name'].split(",") 
@@ -38,9 +40,9 @@ class Route(models.Model):
             last_adress_string = last_adress_split[1]+" "+last_adress_split[0]+","+last_adress_split[3]+last_adress_split[6]
         elif len(last_adress_split)==7:
             last_adress_string = last_adress_split[0]+last_adress_split[2]+last_adress_split[5]
-
-        adress_list.append("Første affaldsø: " + first_adress_string)
-        adress_list.append("Sidste affaldsø: " + last_adress_string)
+        """
+        adress_list.append("Første affaldsø: " + first_coordinate)
+        adress_list.append("Sidste affaldsø: " + last_coordinate)
         return adress_list
     
 
@@ -52,7 +54,7 @@ CATEGORY_CHOICES = (
     (3, "Andet"),
 )
 
-
+# Her oprettes en tabel for areamaintenance
 class AreaMaintenance(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     island = models.ForeignKey('datacollector.TrashIsland', on_delete=models.SET_NULL, null=True)

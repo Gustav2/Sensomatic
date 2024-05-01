@@ -1,5 +1,12 @@
-{% extends 'master.html' %}
-{% block content %}
+<html>
+    <head>
+        <title>Administration</title>
+        <link rel="stylesheet" href="static/css/stylesheet.css">
+    </head>
+    <body>
+        <div>
+        <h1>Administration</h1>
+        </div>
     <p>{{ message }}</p>
 
   <!-- Her ses login felterne og button som er knappen -->
@@ -8,4 +15,5 @@
         {% csrf_token %}
         <button type="submit" >Login</button>
     </form>
-{% endblock content %}
+  </body>
+  </html>

@@ -10,6 +10,7 @@ import json
 from django.http import JsonResponse
 
 # Create your views here.
+# Denne funktion viser loginsiden som kommer fra forms siden
 def index_login_page(request):
     form = forms.LoginForm()
     message = ''
@@ -27,6 +28,7 @@ def index_login_page(request):
                 message = 'Login failed!'
     return render(request, 'index.html', context={'form': form, 'message' : message})
 
+# Denne funktion viser dashboardsidan med data fra databasen
 def dashboard(request):
     if request.user.is_authenticated:
         user= User.objects.filter(is_superuser=False)
@@ -35,11 +37,13 @@ def dashboard(request):
     else:
         return redirect('index')
 
+# Denne funktion skaber funktionen for logud knappen
 def logout_user(request):
     if request.method == 'POST':
         logout(request)
         return redirect('index')
     
+# Denne funktion håndterer post requesten som sender den opdaterede kører til databasen
 @csrf_exempt
 def add_driver(request):
     if  request.method=='POST':
@@ -55,3 +59,17 @@ def add_driver(request):
             route.user = driver_user
             route.save()
     return JsonResponse({'message': 'Driver assigned successfully'}, status=200)
+
+def setting(request):
+    pass
+
+def historik(request):
+    user= User.objects.filter(is_superuser=False)
+    routes = Route.objects.exclude(operating_date = date.today())
+    return render(request, 'historik.html', context= {'routes':routes, 'user':user,})
+
+def storskrald(request):
+    pass
+
+def skaldeniveau(request):
+    pass

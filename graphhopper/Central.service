@@ -1,0 +1,11 @@
+[Unit]
+Description=The Central Server
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/home/jetson/Sensomatic/sensomatic/venv/bin/python3 /home/jetson/Sensomatic/sensomatic/manage.py runserver 0.0.0.0:8000
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
