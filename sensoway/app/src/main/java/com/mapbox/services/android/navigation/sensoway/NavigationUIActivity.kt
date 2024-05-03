@@ -216,8 +216,8 @@ class NavigationUIActivity :
     }
 
 
-    fun getRoutes(): List<Point> {
-        val coordinates = mutableListOf<Point>()
+    fun getRoutes() {
+        waypoints.clear()
 
         val volleyQueue = Volley.newRequestQueue(this)
 
@@ -246,9 +246,7 @@ class NavigationUIActivity :
 
 
         volleyQueue.add(jsonObjectRequest)
-
-
-        return coordinates
+        return
 
     }
 

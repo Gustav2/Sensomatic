@@ -1,5 +1,5 @@
 {
-  "distance_influence": 1,
+  "distance_influence": 70,
   "priority": [
     { "if": "road_access == PRIVATE",  "multiply_by": "0" },
     { "if": "car_access == false", "multiply_by": "0" },
