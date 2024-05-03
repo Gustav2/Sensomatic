@@ -55,9 +55,8 @@ def remove_duplicates(filename):
     unique_lines = []
     seen_lines = set()
     for line in lines:
-        print("yes")
+
         if line.strip() not in seen_lines:  # Check if the stripped line is already seen
-            print("no")
             unique_lines.append(line)
             seen_lines.add(line.strip())  # Add stripped line to seen lines set
 
