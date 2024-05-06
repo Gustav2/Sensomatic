@@ -3,13 +3,14 @@ from django.contrib.auth import login, authenticate, logout
 from . import forms
 from django.shortcuts import redirect
 from operations.models import Route
-from datacollector.models import Trashcan, TrashIsland
+from datacollector.models import Trashcan 
 from django.contrib.auth.models import User
 from datetime import date
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.http import JsonResponse
 from dashboard.forms import AddIsland, AddSensor
+from django.utils.datastructures import MultiValueDictKeyError
 
 def is_logged_in(function, *args, **kwargs):
     def wrap(request, *args, **kwargs):
@@ -75,10 +76,39 @@ def add_driver(request):
 
 @is_logged_in
 def setting(request):
-    add_trashcan = forms.AddSensor()
-    timeinterval = Trashcan.objects.all()[0].time_interval
-    add_trashisland = forms.AddIsland()
-    return render(request, 'indstillinger.html', context={'add_trashcan':add_trashcan, 'timeinterval':timeinterval, 'add_trashisland':add_trashisland})
+    if request.method == "GET":
+        add_trashcan = forms.AddSensor()
+        timeinterval = Trashcan.objects.all()[0].time_interval
+        add_trashisland = forms.AddIsland()
+        return render(request, 'indstillinger.html', context={'add_trashcan':add_trashcan, 'timeinterval':timeinterval, 'add_trashisland':add_trashisland})
+    if request.method == 'POST':
+        print(request.POST)
+        try:
+            if request.POST['islandButton'] == 'islandData':
+                island_data = AddIsland(request.POST)
+                if island_data.is_valid():
+                    island_data.save()
+    
+
+                add_trashcan = forms.AddSensor()
+                timeinterval = Trashcan.objects.all()[0].time_interval
+                add_trashisland = forms.AddIsland()
+                return render(request, 'indstillinger.html', context={'add_trashcan':add_trashcan, 'timeinterval':timeinterval, 'add_trashisland':add_trashisland})
+        except MultiValueDictKeyError:
+            pass
+
+        try:    
+            if request.POST['trashcanButton'] == 'trashcanData':
+                trashcan_data = AddSensor(request.POST)
+                if trashcan_data.is_valid():
+                    trashcan_data.save()
+
+                add_trashcan = forms.AddSensor()
+                timeinterval = Trashcan.objects.all()[0].time_interval
+                add_trashisland = forms.AddIsland()
+                return render(request, 'indstillinger.html', context={'add_trashcan':add_trashcan, 'timeinterval':timeinterval, 'add_trashisland':add_trashisland})
+        except MultiValueDictKeyError:
+            pass
 
 @csrf_exempt
 def set_timeinterval(request):
@@ -91,11 +121,6 @@ def set_timeinterval(request):
             trashcan.save()
     return JsonResponse({'message':'Timeinterval assigned succesfully'}, status = 200)
 
-def add_island(request):
-    if request.method == 'POST':
-        island_data = AddIsland
-        TrashIsland.objects.create(island_data)
-
 @is_logged_in
 def historik(request):
     user= User.objects.filter(is_superuser=False)
@@ -104,4 +129,6 @@ def historik(request):
 
 @is_logged_in
 def skaldeniveau(request):
-    pass
+    trashcans = Trashcan.objects.all()
+    print(trashcans)
+    return render(request, 'skraldespande.html', context= {'trashcans':trashcans})

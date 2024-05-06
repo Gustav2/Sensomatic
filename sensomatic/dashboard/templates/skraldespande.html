@@ -1,0 +1,18 @@
+{% extends 'master.html' %}
+{% block content %}
+
+ <!-- Her bliver ruterne hentet -->
+<h3 class="siteHeader">Skraldespande</h3>
+
+
+
+{% for trashcan in trashcans %}
+<div class="divSkraldespande">
+<b>{{trashcan}}</b>
+<p>Nuværende fyldeniveau: {{trashcan.fill_percentage}} %</p>
+</div>
+{% endfor %}
+
+
+
+{% endblock content %}

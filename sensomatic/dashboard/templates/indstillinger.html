@@ -3,32 +3,35 @@
 <h3 class="siteHeader">Indstillinger</h3>
 
 <div>
-<p> Indstil tidsintervallet mellem data forsendelserne</p>
 
 <div class="slidecontainer divIndstillinger">
+    <b>Indstil tidsintervallet mellem data forsendelserne</b>
+    <br>
+    <br>
     <input type="range" min="0" max="24" value="{{ timeinterval }}" class="slider" id="tidsinterval">
-    <p>Timer: <span id="intervalOutput"></span></p>
+    <p><span id="intervalOutput"></span> Timer</p>
 
   <button id="submitButton", style="float: left;" onclick="sendTimeinterval()">Submit</button>
+  <br>
   </div>
 
 
   <div class="divIndstillinger">
-    <p>Tilføj skraldespandsø</p>
+    <b>Tilføj skraldespandsø</b>
     <form method="post">
         {{ add_trashisland.as_p }}
         {% csrf_token %}
-        <button type="submit", onclick="addIsland()" >Tilføj skraldespand</button>
+        <button type="submit" name="islandButton" value="islandData">Tilføj skraldespand</button>
     </form>
 </div>
 
   <div class="divIndstillinger">
-    <p>Tilføj skraldespand</p>
+    <b>Tilføj skraldespand</b>
 
   <form method="post">
     {{ add_trashcan.as_p }}
     {% csrf_token %}
-    <button type="submit" >Tilføj skraldespand</button>
+    <button type="submit" name="trashcanButton" value="trashcanData">Tilføj skraldespand</button>
 </form>
 
   </div>
@@ -57,7 +60,7 @@
     output.innerHTML = this.value;
     }
 
-    
+
   </script>
 
 

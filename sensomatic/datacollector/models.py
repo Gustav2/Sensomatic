@@ -35,7 +35,7 @@ class Trashcan(models.Model):
 
     island = models.ForeignKey(TrashIsland, on_delete=models.SET_NULL, null=True)
     type = models.IntegerField(choices=TRASH_TYPES)
-    capacity = models.IntegerField()
+    capacity = models.IntegerField(null=True)
     fill_percentage = models.FloatField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
