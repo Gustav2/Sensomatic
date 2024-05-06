@@ -1,6 +1,6 @@
 import json
 
-from django.http import HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
@@ -16,10 +16,7 @@ def handle_post(request):
         payload = json.loads(request.body)
         print("Received data:", payload)
 
-        payload["distance"]
-
-        trashisland = TrashIsland.objects.get(street_name="Test Street")
-        trashcan = Trashcan.objects.get(island=trashisland)
+        trashcan = Trashcan.objects.get(MAC_adress=payload["MAC"])
 
         """
         **Test without this implementation and see if it works. 
@@ -33,10 +30,12 @@ def handle_post(request):
         fill_amount = capacity - empty_space
         fill_percentage = round((fill_amount / capacity) * 100, 2)
 
-        SensorData.objects.create(trashcan=Trashcan.objects.get(id=1), distance=payload["distance"], fill_percentage=fill_percentage)
+        SensorData.objects.create(trashcan=trashcan, distance=payload["distance"], fill_percentage=fill_percentage)
         trashcan.fill_percentage = fill_percentage
         trashcan.save()
+        
+        
 
-        return HttpResponse("Data received successfully.")
+        return JsonResponse({'sleepInterval': trashcan.time_interval}, status = 200)
     else:
-        return HttpResponse("Only POST requests are allowed.")
+        return JsonResponse({'message': 'Invalid request'}, status = 405)

@@ -46,8 +46,7 @@ void initial_setup()  {
       int packetSize = LoRa.parsePacket(); // Try to parse the packet
       if (packetSize) {   // When LoRa packet received
         Serial.println("Received packet!");
-        // Read packet
-        while (LoRa.available()) {
+        while (LoRa.available()) {          // Read packet
           String receivedSetup = LoRa.readString();
           Serial.println(receivedSetup);
     
@@ -94,6 +93,7 @@ void initial_setup()  {
       }
     }
     Serial.println("setupReceived successful");
+    Serial.println("");
     delay(1000);
  }
 
@@ -151,7 +151,7 @@ void setup_tof() {
   vl53.setTimingBudget(50);
   Serial.print(F("Timing budget (ms): "));
   Serial.println(vl53.getTimingBudget());
-
+  Serial.println("");
   /*
   vl.VL53L1X_SetDistanceThreshold(100, 300, 3, 1);
   vl.VL53L1X_SetInterruptPolarity(0);
@@ -217,13 +217,14 @@ void initialise() {
 
 void setup() {
   Serial.begin(115200);
-  delay(100);
   Serial.println("------------------------------------------------");
+  delay(500);
   initialise();
+  Serial.println("");
   Serial.println("Running sensor program...");
-  delay(100);
+  delay(500);
   sensor();
-  delay(100);
+  delay(500);
   setupReceived = false;
   Serial.println("");
   Serial.print("Entering sleep for: ");
