@@ -156,6 +156,7 @@ class NavigationUIActivity :
             return true
         }
         calculateRoute()
+        waypoints.clear()
         return true
     }
 
@@ -217,8 +218,6 @@ class NavigationUIActivity :
 
 
     fun getRoutes() {
-        waypoints.clear()
-
         val volleyQueue = Volley.newRequestQueue(this)
 
         val username: String = (application as NavigationApplication).username
