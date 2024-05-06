@@ -26,6 +26,7 @@ SECRET_KEY = 'django-insecure-b0+t358h^*oc&n*2s(gfl0-p^tt35!jh1fpg3@yny#%$i2uf26
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+CSRF_TRUSTED_ORIGINS = ['https://api.faauzite.com']
 
 
 # Application definition

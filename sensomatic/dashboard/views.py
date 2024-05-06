@@ -3,12 +3,13 @@ from django.contrib.auth import login, authenticate, logout
 from . import forms
 from django.shortcuts import redirect
 from operations.models import Route
-from datacollector.models import Trashcan
+from datacollector.models import Trashcan, TrashIsland
 from django.contrib.auth.models import User
 from datetime import date
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.http import JsonResponse
+from dashboard.forms import AddIsland, AddSensor
 
 def is_logged_in(function, *args, **kwargs):
     def wrap(request, *args, **kwargs):
@@ -91,7 +92,9 @@ def set_timeinterval(request):
     return JsonResponse({'message':'Timeinterval assigned succesfully'}, status = 200)
 
 def add_island(request):
-    pass
+    if request.method == 'POST':
+        island_data = AddIsland
+        TrashIsland.objects.create(island_data)
 
 @is_logged_in
 def historik(request):
