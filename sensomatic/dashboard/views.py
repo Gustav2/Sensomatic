@@ -130,5 +130,4 @@ def historik(request):
 @is_logged_in
 def skaldeniveau(request):
     trashcans = Trashcan.objects.all()
-    print(trashcans)
     return render(request, 'skraldespande.html', context= {'trashcans':trashcans})
