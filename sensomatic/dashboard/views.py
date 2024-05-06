@@ -3,11 +3,23 @@ from django.contrib.auth import login, authenticate, logout
 from . import forms
 from django.shortcuts import redirect
 from operations.models import Route
+from datacollector.models import Trashcan
 from django.contrib.auth.models import User
 from datetime import date
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.http import JsonResponse
+
+def is_logged_in(function, *args, **kwargs):
+    def wrap(request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return function(request, *args, **kwargs)
+        else:
+            return redirect('index')
+        
+    wrap.__doc__ = function.__doc__
+    wrap.__name__ = function.__name__
+    return wrap
 
 # Create your views here.
 # Denne funktion viser loginsiden som kommer fra forms siden
@@ -60,16 +72,33 @@ def add_driver(request):
             route.save()
     return JsonResponse({'message': 'Driver assigned successfully'}, status=200)
 
+@is_logged_in
 def setting(request):
+    add_trashcan = forms.AddSensor()
+    timeinterval = Trashcan.objects.all()[0].time_interval
+    add_trashisland = forms.AddIsland()
+    return render(request, 'indstillinger.html', context={'add_trashcan':add_trashcan, 'timeinterval':timeinterval, 'add_trashisland':add_trashisland})
+
+@csrf_exempt
+def set_timeinterval(request):
+    if request.method == 'POST':
+        timeinterval = json.loads(request.body)
+        hour = timeinterval.get('timeinterval')
+        sensor = Trashcan.objects.all()
+        for trashcan in sensor:
+            trashcan.time_interval = hour
+            trashcan.save()
+    return JsonResponse({'message':'Timeinterval assigned succesfully'}, status = 200)
+
+def add_island(request):
     pass
 
+@is_logged_in
 def historik(request):
     user= User.objects.filter(is_superuser=False)
     routes = Route.objects.exclude(operating_date = date.today())
     return render(request, 'historik.html', context= {'routes':routes, 'user':user,})
 
-def storskrald(request):
-    pass
-
+@is_logged_in
 def skaldeniveau(request):
     pass

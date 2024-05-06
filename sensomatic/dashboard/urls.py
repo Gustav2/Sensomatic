@@ -11,5 +11,6 @@ urlpatterns = [
     path('dashboard/indstillinger/', views.setting, name = 'settings'),
     path('dashboard/historik/', views.historik, name = 'historik'),
     path('dashboard/skraldespand/', views.skaldeniveau, name = 'skaldeniveau'),
-    path('dashboard/storskrald/', views.storskrald, name = 'storskrald'),
+    path('api/timeintervalassignment/', views.set_timeinterval, name='set_timeinterval'),
+    path('api/addIsland', views.add_island, name="add_island"),
 ]
