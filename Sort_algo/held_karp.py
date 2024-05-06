@@ -2,6 +2,7 @@ import itertools
 import random
 from time import perf_counter
 import requests
+import json
 
 def held_karp(dists):
     """
@@ -67,7 +68,7 @@ def held_karp(dists):
 
     return opt, list(reversed(path))
 
-def generate_distances(n):
+def generate_sudo_distances(n):
     """
     Generate a random distance matrix for a given number of nodes.
 
@@ -115,11 +116,13 @@ def get_dist_p2p(start_latitude_input, start_longitude_input, end_latitude_input
     
     headers = {"Content-Type": "application/json"}
     response = requests.post(url, json=payload, headers=headers, params=query)
-    data = response.json() # data is dict type
-    data_list = data.get("paths") # get data in list type
-    data_string = "".join(str(x) for x in data_list) # convert list -> str
-    data_select = data_string[13:21] # select distance in meters from str
-    return(data_select)
+    data_dict_level0 = response.json()
+    data_dict_level1 = data_dict_level0["paths"]
+    data_dict_level2 = data_dict_level1[0]
+    data_final = data_dict_level2["distance"]
+    print(data_final)
+    
+    return(data_final)
 
 def select_coordinates(file_path_input):
     file_path = file_path_input
@@ -131,10 +134,10 @@ def select_coordinates(file_path_input):
 
 def make_dist_matrix():
     tal = 0
-    master_coordinate_list = select_coordinates("Sort_algo\coordinates.txt")
+    master_coordinate_list = select_coordinates("Sort_algo\coordinates_simulation.txt")
     dists = [[0] * len(master_coordinate_list) for i in range(len(master_coordinate_list))]
     for i in range(len(master_coordinate_list)):
-        print(tal)
+        #print(tal)
         for n in range(len(master_coordinate_list)):
             
             point_start = master_coordinate_list[i-1]
@@ -147,15 +150,15 @@ def make_dist_matrix():
             #print(tal)
             #print(f"n: {n}, i: {i}: {start_latitude}, {start_longitude}, {end_latitude}, {end_longitude}")
             dist_p2p = get_dist_p2p(start_longitude, start_latitude, end_longitude, end_latitude)
-            #print(dist_p2p)
-    print(tal)
+            print(dist_p2p)
+    #print(f"Tal: {tal}")
 
 
 #print(get_dist_p2p(57.029577,9.944435, 57.015399,9.984215))
-#t1_start = perf_counter() # Start the timer
-#make_dist_matrix()
-#t1_stop = perf_counter() # Stop the timer
-#print("Runtime:", t1_stop - t1_start, "seconds")
+t1_start = perf_counter() # Start the timer
+make_dist_matrix()
+t1_stop = perf_counter() # Stop the timer
+print("Runtime:", t1_stop - t1_start, "seconds")
 
 
 """
