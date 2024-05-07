@@ -81,8 +81,8 @@ def two_opt_swap(route, i, k):
     new_route = route[:i] + route[i:k+1][::-1] + route[k+1:]
     return new_route
 
-def two_opt():
-    container_coordinates = select_coordinates("Sort_algo\Realistic_coordinates.txt")
+def two_opt(file_name):
+    container_coordinates = select_coordinates(file_name)
     best_order, best_length = greedy(container_coordinates)
     
     # Initialize variables for optimization loop
@@ -112,13 +112,14 @@ def calculate_route_length(route, container_coordinates):
         length += get_dist_p2p(start, end)
     return length
     
-def main():
+def main(file_name):
     t1_start = perf_counter()
-    best_order, best_length = two_opt()
+    best_order, best_length = two_opt(file_name)
     t1_stop = perf_counter()
 
     print("Runtime:", t1_stop - t1_start, "seconds")
     print("Best order:", best_order)
     print("Best length:", best_length)
+    print("DONE!!")
 
-main()
+main("Sort_algo\Coordinates_for_test\Realistic_coordinates.txt")
