@@ -16,13 +16,10 @@ const int irqPin = 2;    // Must be a hardware interrupt pin
 
 String UID = WiFi.macAddress();
 
-RTC_DATA_ATTR bool setupReceived = false; // Flag for ascertaining whether setup data has been received
+int sleepInterval;
+RTC_DATA_ATTR int oldNtp;
 
-// Variables for sleep interval settings
-
-RTC_DATA_ATTR int oldNtpTime;             // For storing the last NTP time for comparison
-RTC_DATA_ATTR int desiredInterval;        // The interval setting given by gateway
-
+bool setupReceived = false; // Flag for ascertaining whether setup data has been received
 
 // Message counter
 byte msgCount = 0;
@@ -49,8 +46,7 @@ void initial_setup()  {
       int packetSize = LoRa.parsePacket(); // Try to parse the packet
       if (packetSize) {   // When LoRa packet received
         Serial.println("Received packet!");
-        // Read packet
-        while (LoRa.available()) {
+        while (LoRa.available()) {          // Read packet
           String receivedSetup = LoRa.readString();
           Serial.println(receivedSetup);
     
@@ -72,25 +68,19 @@ void initial_setup()  {
             String ntpTimeString = receivedSetup.substring(pos2+1, pos3);
             String newIntervalString = receivedSetup.substring(pos3+1, receivedSetup.length());
             
-            int ntpTime = (ntpTimeString.toInt()*1000);
-            
-            int ntpDifference = (ntpTime - oldNtpTime);
-            
-            desiredInterval = newIntervalString.toInt();
+            int ntpTime = (ntpTimeString.toInt());
+            sleepInterval = newIntervalString.toInt();
 
-            int timeError = desiredInterval - ntpDifference;
-            
-            desiredInterval = desiredInterval + timeError;
-            oldNtpTime = ntpTime;
-            
-            Serial.println("Data for UID received");
+            int ntpPassed = (ntpTime - oldNtp)*1000;
+
             Serial.println("");
-            Serial.print("NTP time stored: ");
-            Serial.println(oldNtpTime);
-            Serial.print("Interval time stored: ");
-            Serial.println(desiredInterval);
+            Serial.print("NTP time from transmission: ");
+            Serial.println(ntpTime);
+            Serial.print("NTP time since last transmission: ");
+            Serial.println(ntpPassed);
             Serial.println("");
             
+            oldNtp = ntpTime;
             setupReceived = true;
             }
             
@@ -103,6 +93,7 @@ void initial_setup()  {
       }
     }
     Serial.println("setupReceived successful");
+    Serial.println("");
     delay(1000);
  }
 
@@ -160,7 +151,7 @@ void setup_tof() {
   vl53.setTimingBudget(50);
   Serial.print(F("Timing budget (ms): "));
   Serial.println(vl53.getTimingBudget());
-
+  Serial.println("");
   /*
   vl.VL53L1X_SetDistanceThreshold(100, 300, 3, 1);
   vl.VL53L1X_SetInterruptPolarity(0);
@@ -217,7 +208,7 @@ void initialise() {
   delay(100);
   initial_setup();
   delay(100);
-  //setup_tof();
+  setup_tof();
   delay(100);
   Serial.println("initialise successful");
 }
@@ -226,20 +217,21 @@ void initialise() {
 
 void setup() {
   Serial.begin(115200);
-  delay(100);
+  Serial.println("------------------------------------------------");
+  delay(500);
   initialise();
+  Serial.println("");
   Serial.println("Running sensor program...");
-  delay(100);
-  //sensor();
-  delay(100);
+  delay(500);
+  sensor();
+  delay(500);
   setupReceived = false;
   Serial.println("");
-  Serial.println(oldNtpTime);
   Serial.print("Entering sleep for: ");
-  Serial.println(desiredInterval);
-  Serial.print("");
+  Serial.println(sleepInterval);
+  Serial.println("================================================");
   Serial.flush();
-  esp_sleep_enable_timer_wakeup(desiredInterval * 1000);
+  esp_sleep_enable_timer_wakeup(sleepInterval * 1000);
   esp_deep_sleep_start();
 }
 

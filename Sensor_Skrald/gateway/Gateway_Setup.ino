@@ -26,12 +26,14 @@ const char* ntpServer = "pool.ntp.org";
 const long gmtOffset_sec = 3600;
 const int daylightOffset_sec = 3600;
 
+unsigned long epochTime;
+
 // Variables for sensor data storage
 String msgCount;
 String distance;
 
 int NTP;
-int transmitInterval = 10000;
+int sleepInterval = 30000;
 
 // JSON size
 char jsonOutput[128];
@@ -74,13 +76,14 @@ void lora_setup() {
 
 
 // Function for getting current time in UNIX format
-time_t getTime()  {
-  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
-  time_t now = time(nullptr);
-  while (now < 1000000000) {
-    delay(500);
-    now = time(nullptr);
+unsigned long getTime() {
+  time_t now;
+  struct tm timeinfo;
+  if (!getLocalTime(&timeinfo)) {
+    //Serial.println("Failed to obtain time");
+    return(0);
   }
+  time(&now);
   return now;
 }
 
@@ -90,6 +93,7 @@ void setup() {
     ;
 
   wifi_setup();
+  configTime(0, 0, ntpServer);
   lora_setup();
 }
  
@@ -110,10 +114,11 @@ void loop() {
         
         String requestUID = payload.substring(pos1+1, payload.length());
         
-        time_t currentTime = getTime();
-        Serial.println(currentTime);
+        epochTime = getTime();
+        Serial.print("Epoch time: ");
+        Serial.println(epochTime);
       
-        String(outbound) = "?responseSetup&" + String(requestUID) + "%" + String(currentTime) + "#" + String(transmitInterval);
+        String(outbound) = "?responseSetup&" + String(requestUID) + "%" + String(epochTime) + "#" + String(sleepInterval);
       
         delay(2000);
       
@@ -155,15 +160,22 @@ void loop() {
     
           serializeJson(doc, jsonOutput);
           
-    
           int httpResponseCode = http.POST(String(jsonOutput)); // Actual POST request
     
-            
-          String response = http.getString();       // Get response and print in Serial
+          String jsonResponse = http.getString();       // Get response and print in Serial
+          
+          deserializeJson(doc, jsonResponse);
+          
+          int sleepIntervalHours = doc["sleepInterval"];
+
+          sleepInterval = sleepIntervalHours * 3600000000; // Converts hours to microseconds
+          
           Serial.print("httpResponseCode: ");
           Serial.println(httpResponseCode);
-          Serial.print("response: ");
-          Serial.println(response);
+          Serial.print("Json Response: ");
+          Serial.println(jsonResponse);
+          Serial.print("Sleep interval set to: ");
+          Serial.println(sleepInterval);
         
           http.end();   // Ends HTTP to free resources
         

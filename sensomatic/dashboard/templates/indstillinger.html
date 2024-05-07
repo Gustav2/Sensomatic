@@ -1,0 +1,67 @@
+{% extends 'master.html' %}
+{% block content %}
+<h3 class="siteHeader">Indstillinger</h3>
+
+<div>
+
+<div class="slidecontainer divIndstillinger">
+    <b>Indstil tidsintervallet mellem data forsendelserne</b>
+    <br>
+    <br>
+    <input type="range" min="0" max="24" value="{{ timeinterval }}" class="slider" id="tidsinterval">
+    <p><span id="intervalOutput"></span> Timer</p>
+
+  <button id="submitButton", style="float: left;" onclick="sendTimeinterval()">Submit</button>
+  <br>
+  </div>
+
+
+  <div class="divIndstillinger">
+    <b>Tilføj skraldespandsø</b>
+    <form method="post">
+        {{ add_trashisland.as_p }}
+        {% csrf_token %}
+        <button type="submit" name="islandButton" value="islandData">Tilføj skraldespand</button>
+    </form>
+</div>
+
+  <div class="divIndstillinger">
+    <b>Tilføj skraldespand</b>
+
+  <form method="post">
+    {{ add_trashcan.as_p }}
+    {% csrf_token %}
+    <button type="submit" name="trashcanButton" value="trashcanData">Tilføj skraldespand</button>
+</form>
+
+  </div>
+
+  <script>
+
+    async function sendTimeinterval(){
+        const timeinterval = document.getElementById( "tidsinterval").value
+        const config  = {
+            method: "POST",
+            body: JSON.stringify({timeinterval : timeinterval})
+        }
+        fetch("{% url 'set_timeinterval' %}", config).then(res => {
+            console.log("Tidsinterval tildelt")
+        }).catch(error =>{
+            alert('Der skete en fejl')
+        })
+    }
+
+
+    var slider = document.getElementById("tidsinterval");
+    var output = document.getElementById("intervalOutput");
+    output.innerHTML = slider.value;
+
+    slider.oninput = function() {
+    output.innerHTML = this.value;
+    }
+
+
+  </script>
+
+
+{% endblock content %}

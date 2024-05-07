@@ -86,3 +86,19 @@
         text-align: left;
         font-size: 30px;
       }
+
+      .divIndstillinger{
+        background-color: lightgrey;
+        width: 300px;
+        border: 2px solid black;
+        padding: 25px;
+        margin: 20px;
+      }
+
+      .divSkraldespande{
+        background-color: lightgrey;
+        width: 300px;
+        border: 2px solid black;
+        padding: 25px;
+        margin: 20px;
+      }
