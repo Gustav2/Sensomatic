@@ -1,3 +1,10 @@
+"""Script that uses a Greddy-2-opt hyprid algorithem to make an optimal route for garbage truck
+    to be more effecient when emptying containers in inner Aalborg
+
+Returns:
+    list: If "main" function is run the main return is a sorted list (there are other returns as well).
+"""
+
 import numpy as np
 import requests
 from time import perf_counter
@@ -156,7 +163,8 @@ def two_opt(file_name):
         file_name (str): Name of the file containing container coordinates.
         
     Returns:
-        tuple: A tuple containing the best order of visiting containers and the corresponding length.
+        best_order (list): A list containing the best order of visiting containers.
+        best_length (float): Float value of the route length in meters.
     """
     # Execute the two-opt algorithm to optimize the route
     container_coordinates = select_coordinates(file_name)
@@ -205,6 +213,11 @@ def main(file_name):
     
     Args:
         file_name (str): Name of the file containing container coordinates.
+    
+    Returns:
+        best_order (list): A list containing the best order of visiting containers.
+        best_length (float): Float value of the route length in meters.
+        time_total (float): Time it took to calculate
     """
     # Start the timer
     t1_start = perf_counter()
@@ -212,8 +225,14 @@ def main(file_name):
     # Stop the timer
     t1_stop = perf_counter()
 
+    time_total = t1_stop - t1_start
+    
     # Print the runtime, best order, and best length
-    print("Runtime:", t1_stop - t1_start, "seconds")
+    """
+    print("Runtime:", time_total, "seconds")
     print("Best order:", best_order)
     print("Best length:", best_length)
     print("DONE!!")
+    """
+    
+    return best_order, best_length, time_total
