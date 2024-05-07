@@ -2,88 +2,86 @@ import numpy as np
 import requests
 from time import perf_counter
 
-def algorithm(cities):
+def algorithm(containere_coordinates):
+    # Initialize variables to store the best order and length
     best_order = []
     best_length = float('inf')
 
-    for i_start, start in enumerate(cities):
-        print("YES")
+    # Loop through each containere as a starting point
+    for i_start, start in enumerate(containere_coordinates):
+        # Initialize the order of containeres and total length
         order = [i_start]
         length = 0
 
-        i_next, next_city, dist = get_closest(start, cities, order)
+        # Find the closest containere to the current containere
+        i_next, next_containere, dist = get_closest(start, containere_coordinates, order)
         length += dist
         order.append(i_next)
 
-        while len(order) < cities.shape[0]:
-            i_next, next_city, dist = get_closest(next_city, cities, order)
+        # Continue adding cities until all are visited
+        while len(order) < containere_coordinates.shape[0]:
+            i_next, next_containere, dist = get_closest(next_containere, containere_coordinates, order)
             length += dist
             order.append(i_next)
 
+        # Update the best order and length if a shorter path is found
         if length < best_length:
             best_length = length
             best_order = order
             
     return best_order, best_length
 
-def get_closest(city, cities, visited):
+def get_closest(containere, containere_coordinates, visited):
+    # Initialize the best distance to infinity
     best_distance = float('inf')
 
-    for i, c in enumerate(cities):
+    # Loop through each containere
+    for i, c in enumerate(containere_coordinates):
+        # Check if the containere has not been visited
         if i not in visited:
-            distance = get_dist_p2p(city, c)
+            # Calculate the distance between the current containere and the next containere
+            distance = get_dist_p2p(containere, c)
 
+            # Update the closest containere if a shorter distance is found
             if distance < best_distance:
-                closest_city = c
-                i_closest_city = i
+                closest_containere = c
+                i_closest_containere = i
                 best_distance = distance
 
-    return i_closest_city, closest_city, best_distance
-
-def dist_squared(c1, c2):
-    t1 = c2[0] - c1[0]
-    t2 = c2[1] - c1[1]
-
-    return t1**2 + t2**2
+    return i_closest_containere, closest_containere, best_distance
 
 def get_dist_p2p(point_start, point_end):
-    
+    # Extract latitude and longitude coordinates for start and end points
     start_latitude = float(point_start[1])
     start_longitude = float(point_start[0])
     end_latitude = float(point_end[1])
     end_longitude = float(point_end[0])
     
+    # Set up the API request to calculate the distance between two points
     url = "https://faauzite.com/route"
     query = {
-    "key": "YOUR_API_KEY_HERE"
+        "key": "YOUR_API_KEY_HERE" 
     }
     payload = {
-    "profile": "car",
-    "points": [
-        [
-            start_longitude, 
-            start_latitude
-        
-        ],
-        [
-            end_longitude,
-            end_latitude
-        
+        "profile": "car",
+        "points": [
+            [start_longitude, start_latitude],
+            [end_longitude, end_latitude]
         ]
-    ]
     }
     
+    # Make the API request and parse the response to extract the distance
     headers = {"Content-Type": "application/json"}
     response = requests.post(url, json=payload, headers=headers, params=query)
     data_dict_level0 = response.json()
     data_dict_level1 = data_dict_level0["paths"]
     data_dict_level2 = data_dict_level1[0]
     data_final = data_dict_level2["distance"]
-    #print(data_final)
     
-    return(data_final)
+    return data_final
 
 def select_coordinates(file_path_input):
+    # Read coordinates from a file and convert them to a NumPy array
     file_path = file_path_input
     list_of_lists = []
     with open(file_path, 'r') as file:
@@ -97,27 +95,21 @@ def select_coordinates(file_path_input):
     array_coordinates = np.array(list_of_lists)
     return array_coordinates
 
-
 def main():
-    t1_start = perf_counter() # Start the timer
+    # Start the timer
+    t1_start = perf_counter()
 
-    cities = select_coordinates("Sort_algo\Realistic_coordinates.txt")
-    print(len(cities))
-    best_order, best_length = algorithm(cities)
+    # Read containeres from a file and find the shortest path
+    containere_coordinates = select_coordinates("Sort_algo\Realistic_coordinates.txt")
+    print(len(containere_coordinates))
+    best_order, best_length = algorithm(containere_coordinates)
     
-    t1_stop = perf_counter() # Stop the timer
+    # Stop the timer
+    t1_stop = perf_counter()
 
-    # Print the best order and length
+    # Print the runtime, best order, and best length
     print("Runtime:", t1_stop - t1_start, "seconds")
     print("Best order:", best_order)
     print("Best length:", best_length)
 
- 
 main()
-
-
-
-# Example input: Cities represented as coordinates (x, y)
-#cities = np.array([[0, 0], [1, 2], [3, 1], [2, 3]])
-
-
