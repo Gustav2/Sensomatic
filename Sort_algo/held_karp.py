@@ -120,7 +120,7 @@ def get_dist_p2p(start_latitude_input, start_longitude_input, end_latitude_input
     data_dict_level1 = data_dict_level0["paths"]
     data_dict_level2 = data_dict_level1[0]
     data_final = data_dict_level2["distance"]
-    print(data_final)
+    #print(data_final)
     
     return(data_final)
 
@@ -133,11 +133,14 @@ def select_coordinates(file_path_input):
     return list_of_lists
 
 def make_dist_matrix():
-    tal = 0
+    talMain = 100
+    tal2 = 1
     master_coordinate_list = select_coordinates("Sort_algo\coordinates_simulation.txt")
     dists = [[0] * len(master_coordinate_list) for i in range(len(master_coordinate_list))]
+    print(dists)
     for i in range(len(master_coordinate_list)):
         #print(tal)
+        talMain = talMain+1
         for n in range(len(master_coordinate_list)):
             
             point_start = master_coordinate_list[i-1]
@@ -146,11 +149,13 @@ def make_dist_matrix():
             start_longitude = float(point_start[1])
             end_latitude = float(point_end[0])
             end_longitude = float(point_end[1])
-            tal = tal + 1
+            tal2 = tal2 + 1
+            dists[i][n] = talMain
             #print(tal)
             #print(f"n: {n}, i: {i}: {start_latitude}, {start_longitude}, {end_latitude}, {end_longitude}")
             dist_p2p = get_dist_p2p(start_longitude, start_latitude, end_longitude, end_latitude)
-            print(dist_p2p)
+            print(dists)
+            
     #print(f"Tal: {tal}")
 
 
