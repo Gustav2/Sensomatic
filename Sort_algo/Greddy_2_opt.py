@@ -121,5 +121,3 @@ def main(file_name):
     print("Best order:", best_order)
     print("Best length:", best_length)
     print("DONE!!")
-
-main("Sort_algo\Coordinates_for_test\Realistic_coordinates.txt")

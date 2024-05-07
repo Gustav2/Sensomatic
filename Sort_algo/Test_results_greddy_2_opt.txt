@@ -1,0 +1,65 @@
+----5----
+Runtime: 7.190704900000128 seconds
+Best order: [0, 1, 2, 3, 4]
+Best length: 1350.325      
+DONE!!
+Runtime: 6.560812399999122 seconds
+Best order: [0, 1, 2, 3, 4]
+Best length: 1350.325      
+DONE!!
+Runtime: 6.704412999999477 seconds
+Best order: [0, 1, 2, 3, 4]
+Best length: 1350.325
+DONE!!
+Runtime: 6.656677999999374 seconds
+Best order: [0, 1, 2, 3, 4]
+Best length: 1350.325
+DONE!!
+Runtime: 6.682219099995564 seconds
+Best order: [0, 1, 2, 3, 4]
+Best length: 1350.325
+DONE!!
+
+----10----
+Runtime: 90.1653348999971 seconds
+Best order: [4, 5, 8, 9, 1, 2, 6, 7, 3, 0]
+Best length: 2545.614
+DONE!!
+Runtime: 87.62916630000109 seconds
+Best order: [4, 5, 8, 9, 1, 2, 6, 7, 3, 0]
+Best length: 2545.614
+DONE!!
+Runtime: 89.45912189999945 seconds
+Best order: [4, 5, 8, 9, 1, 2, 6, 7, 3, 0]
+Best length: 2545.614
+DONE!!
+Runtime: 85.65263490000507 seconds
+Best order: [4, 5, 8, 9, 1, 2, 6, 7, 3, 0]
+Best length: 2545.614
+DONE!!
+Runtime: 81.92038640000101 seconds
+Best order: [4, 5, 8, 9, 1, 2, 6, 7, 3, 0]
+Best length: 2545.614
+DONE!!
+
+----15----
+Runtime: 312.05212950000714 seconds
+Best order: [7, 8, 9, 11, 6, 12, 4, 5, 1, 0, 13, 14, 2, 3, 10]
+Best length: 7932.701
+DONE!!
+Runtime: 323.1992664999998 seconds
+Best order: [7, 8, 9, 11, 6, 12, 4, 5, 1, 0, 13, 14, 2, 3, 10]
+Best length: 7932.701
+DONE!!
+Runtime: 319.47389219999604 seconds
+Best order: [7, 8, 9, 11, 6, 12, 4, 5, 1, 0, 13, 14, 2, 3, 10]
+Best length: 7932.701
+DONE!!
+Runtime: 322.11698510000133 seconds
+Best order: [7, 8, 9, 11, 6, 12, 4, 5, 1, 0, 13, 14, 2, 3, 10]
+Best length: 7932.701
+DONE!!
+Runtime: 324.2226539999974 seconds
+Best order: [7, 8, 9, 11, 6, 12, 4, 5, 1, 0, 13, 14, 2, 3, 10]
+Best length: 7932.701
+DONE!!
