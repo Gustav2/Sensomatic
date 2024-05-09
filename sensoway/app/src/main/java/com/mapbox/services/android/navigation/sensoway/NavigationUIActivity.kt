@@ -185,8 +185,6 @@ class NavigationUIActivity :
             for (waypoint in waypoints) {
                 this.addWaypoint(waypoint)
             }
-            this.voiceUnits(DirectionsCriteria.METRIC)
-            this.alternatives(true)
             this.destination(destination)
             this.user("gh")
             this.profile("truck")
