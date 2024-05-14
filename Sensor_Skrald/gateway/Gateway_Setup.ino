@@ -21,6 +21,8 @@ const int irqPin = 2;    // Must be a hardware interrupt pin
 const char* ssid = "Sensomatic";
 const char* password = "password12!";
 
+const char* httpDestination = "http://192.168.0.102:8000/datacollector/handle_post/";
+
 // Information for NTP connection
 const char* ntpServer = "pool.ntp.org";
 const long gmtOffset_sec = 3600;
@@ -29,11 +31,10 @@ const int daylightOffset_sec = 3600;
 unsigned long epochTime;
 
 // Variables for sensor data storage
-String msgCount;
 String distance;
 
 int NTP;
-int sleepInterval = 30000;
+int sleepInterval = 60000;
 
 // JSON size
 char jsonOutput[128];
@@ -99,26 +100,41 @@ void setup() {
  
 void loop() {
   int packetSize = LoRa.parsePacket(); // Try to parse the packet
-
   if (packetSize) {   // When LoRa packet received
-    Serial.println("Received packet!");
+    time_t currentTime = getTime(); // Get current time
+    struct tm * timeinfo = localtime(&currentTime); // Convert UNIX time to struct tm
+    
+    Serial.println("------------------------------------------------");
+    Serial.print("Received packet at: ");
+    // Print current time in 24-hour format
+    char timeString[20];
+    strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", timeinfo);
+    Serial.println(timeString);
     
     // Read packet
+    // Request format: @UID
+    // Data format: &data#UID
+    
     while (LoRa.available()) {
       String payload = LoRa.readString();
+
+      int pos1 = payload.indexOf("#");
+      String requestUID = payload.substring(1, payload.length());
+      
+      Serial.print("From: ");
+      Serial.println(requestUID);
+      Serial.println("");
       Serial.println(payload); 
+      Serial.println("");
 
       if (String(payload[0]) == "@") {
         Serial.println("Setup request received");
-        int pos1 = payload.indexOf("#");
-        
-        String requestUID = payload.substring(pos1+1, payload.length());
-        
         epochTime = getTime();
         Serial.print("Epoch time: ");
         Serial.println(epochTime);
-      
-        String(outbound) = "?responseSetup&" + String(requestUID) + "%" + String(epochTime) + "#" + String(sleepInterval);
+
+        // Outbound format: ?requestUID%sleepInterval
+        String(outbound) = "?" + String(requestUID) + "%" + String(sleepInterval);
       
         delay(2000);
       
@@ -130,32 +146,39 @@ void loop() {
         LoRa.endPacket();
       
         Serial.println("Outbound package sent");
+        Serial.println("------------------------------------------------");
       }
 
-      else {
+      else if (String(payload[0]) == "&") {
         // Read data from string
-        // Format "UID#distance/msgCount
+        // Format "&data#UID
         int pos1 = payload.indexOf("#");
-        int pos2 = payload.indexOf("/");
     
-        String MAC = payload.substring(0, pos1);
-        distance = payload.substring(pos1+1, pos2);
-        msgCount = payload.substring(pos2+1, payload.length());
+        distance = payload.substring(1, pos1);
+        String MAC = payload.substring(pos1+1, payload.length());
+
+        Serial.print("Data received from: ");
+        Serial.println(MAC);
+        Serial.print("Measured distance is: ");
+        Serial.println(distance);
+        Serial.println("");
       
         // POST this to the HTTP connection
         if (WiFi.status() == WL_CONNECTED) {
           HTTPClient http;
     
-          http.begin("http://192.168.0.102:8000/datacollector/handle_post/"); // Specify destination for HTTP request
+          http.begin(httpDestination); // Specify destination for HTTP request
           http.addHeader("Content-Type", "application/json"); // Specify content-type header
     
           const size_t CAPACITY = JSON_OBJECT_SIZE(1);
           StaticJsonDocument<CAPACITY> doc;
     
           JsonObject object = doc.to<JsonObject>();
+          // Read from incoming
           object["MAC"] = MAC;
           object["distance"] = distance;
-          object["message count"] = msgCount;
+
+          // Extrapolated locally
           object["rssi"] = LoRa.packetRssi();
     
           serializeJson(doc, jsonOutput);
@@ -166,9 +189,11 @@ void loop() {
           
           deserializeJson(doc, jsonResponse);
           
-          int sleepIntervalHours = doc["sleepInterval"];
+          //int sleepIntervalHours = doc["sleepInterval"];
+          
+          //sleepInterval = sleepIntervalHours * 3600000; // Converts hours to milliseconds
 
-          sleepInterval = sleepIntervalHours * 3600000000; // Converts hours to microseconds
+          sleepInterval = 60000;
           
           Serial.print("httpResponseCode: ");
           Serial.println(httpResponseCode);
@@ -186,6 +211,7 @@ void loop() {
           }
       }
 
+      else {Serial.println("Erroneous packet received");}
     // NO DELAY IN THIS CODE
     // Delay is currently implemented on the individual sensor transmission. 
     // The gateway relays the LoRa data to the server as fast as possible

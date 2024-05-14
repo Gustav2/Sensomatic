@@ -17,12 +17,9 @@ const int irqPin = 2;    // Must be a hardware interrupt pin
 String UID = WiFi.macAddress();
 
 int sleepInterval;
-RTC_DATA_ATTR int oldNtp;
+int randomDelay = 0;
 
 bool setupReceived = false; // Flag for ascertaining whether setup data has been received
-
-// Message counter
-byte msgCount = 0;
 
 void initial_setup()  {
   // This function runs the first time the ESP is active without any settings collected from the gateway
@@ -30,12 +27,11 @@ void initial_setup()  {
   while (!setupReceived)  {    
     // Requests setup data
     LoRa.beginPacket();
-    LoRa.print("@requestSetup");
-    LoRa.print("#");
+    LoRa.print("@");
     LoRa.print(WiFi.macAddress());
     LoRa.endPacket();
     Serial.println("@requestSetup package sent!");
-    
+    // Format: @macAddress
     delay(1000);
     
     unsigned long startTime;
@@ -51,13 +47,11 @@ void initial_setup()  {
           Serial.println(receivedSetup);
     
           // Read data from string
-          // Incoming format: ?responseSetup&requestUID%currentTime#transmitInterval
+          // Incoming format: ?requestUID%transmitInterval
           
-          int pos1 = receivedSetup.indexOf("&");
-          int pos2 = receivedSetup.indexOf("%");
-          int pos3 = receivedSetup.indexOf("#");
+          int pos1 = receivedSetup.indexOf("%");
           
-          String responseUID = receivedSetup.substring(pos1+1, pos2);
+          String responseUID = receivedSetup.substring(1, pos1);
 
           Serial.print("Personal UID: ");
           Serial.println(UID);
@@ -65,28 +59,17 @@ void initial_setup()  {
           Serial.println(responseUID);
           
           if (responseUID == UID) {
-            String ntpTimeString = receivedSetup.substring(pos2+1, pos3);
-            String newIntervalString = receivedSetup.substring(pos3+1, receivedSetup.length());
-            
-            int ntpTime = (ntpTimeString.toInt());
+            String newIntervalString = receivedSetup.substring(pos1+1, receivedSetup.length());            
             sleepInterval = newIntervalString.toInt();
-
-            int ntpPassed = (ntpTime - oldNtp)*1000;
-
-            Serial.println("");
-            Serial.print("NTP time from transmission: ");
-            Serial.println(ntpTime);
-            Serial.print("NTP time since last transmission: ");
-            Serial.println(ntpPassed);
-            Serial.println("");
-            
-            oldNtp = ntpTime;
             setupReceived = true;
             }
             
           else {
             Serial.println("Data for other UID received, repeating...");
-            delay(1000);
+            randomDelay = random(20000, 60000);
+            Serial.print("Delay  is: ");
+            Serial.println(randomDelay);
+            delay(randomDelay);
             }
           }
         }
@@ -161,6 +144,16 @@ void setup_tof() {
 
 }
 
+void hibernation()  {
+  esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH,   ESP_PD_OPTION_OFF);
+  esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_SLOW_MEM, ESP_PD_OPTION_OFF);
+  esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_FAST_MEM, ESP_PD_OPTION_OFF);
+  esp_sleep_pd_config(ESP_PD_DOMAIN_XTAL,         ESP_PD_OPTION_OFF);
+  
+  esp_sleep_enable_timer_wakeup((sleepInterval - randomDelay) * 1000);
+  esp_deep_sleep_start();
+}
+
 void sensor() {
    // TOF reading part
   int16_t distance;
@@ -179,22 +172,18 @@ void sensor() {
 
     // LoRa transmission part
     // Create payload for packet
-    // Format "UID#distance/msgCount
-    String payload = String(UID) + "#" + String(distance) + "/" + String(msgCount);
-
+    // Format "&data#UID
+    String payload = "&" + String(distance) + "#" + String(UID);
     // LoRa packet sending
-    Serial.print("Sending packet: ");
-    Serial.println(msgCount);
+    Serial.print("Sending packet as: ");
     Serial.print("UID: ");
     Serial.println(UID);
+    Serial.println(payload);
 
     // Send packet
     LoRa.beginPacket();
     LoRa.print(payload);
     LoRa.endPacket();
- 
-    // Increment packet counter
-    msgCount++;
 
     // data is read out, time for another reading!
     vl53.clearInterrupt();
@@ -228,11 +217,10 @@ void setup() {
   setupReceived = false;
   Serial.println("");
   Serial.print("Entering sleep for: ");
-  Serial.println(sleepInterval);
+  Serial.println(sleepInterval - randomDelay);
   Serial.println("================================================");
   Serial.flush();
-  esp_sleep_enable_timer_wakeup(sleepInterval * 1000);
-  esp_deep_sleep_start();
+  hibernation();
 }
 
 void loop() {
