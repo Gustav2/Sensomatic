@@ -125,7 +125,7 @@ def select_coordinates(file_path_input):
 def two_opt_plus_plus_swap(route, i, k):
     """
     Perform a 2-opt++ swap operation between two nodes in a route.
-    
+
     Args:
         route (list): List representing the order of visiting containers.
         i (int): Index of the first container to swap.
@@ -134,8 +134,41 @@ def two_opt_plus_plus_swap(route, i, k):
     Returns:
         list: Updated route after performing the 2-opt++ swap.
     """
-    n = len(route)
-    new_route = route[:i] + [route[k]] + route[i+1:k] + [route[i]] + route[k+1:]
+    # Create a set of all nodes in the route
+    route_set = set(route)
+
+    # Determine the neighbors of nodes i and k
+    neighbors_i = get_neighbors(route, i)
+    neighbors_k = get_neighbors(route, k)
+
+    # Find the common neighbors between nodes i and k
+    common_neighbors = neighbors_i.intersection(neighbors_k)
+
+    # If there are common neighbors, select the closest one for the swap
+    if common_neighbors:
+        closest_common_neighbor = min(common_neighbors, key=lambda x: route.index(x))
+        # Swap edges (i, i+1) and (k, k+1) with (i, k) and (i+1, k+1)
+        new_route = route[:i] + [closest_common_neighbor] + route[i+1:k+1] + [route[i]] + route[k+1:]
+    else:
+        # If there are no common neighbors, perform a regular 2-opt swap
+        new_route = two_opt_swap(route, i, k)
+
+    return new_route
+
+def two_opt_swap(route, i, k):
+    """
+    Perform a 2-opt swap operation between two nodes in a route.
+    
+    Args:
+        route (list): List representing the order of visiting containers.
+        i (int): Index of the first container to swap.
+        k (int): Index of the second container to swap.
+        
+    Returns:
+        list: Updated route after performing the 2-opt swap.
+    """
+    # Perform 2-opt swap between indices i and k in the route
+    new_route = route[:i] + route[i:k+1][::-1] + route[k+1:]
     return new_route
 
 def two_opt_plus_plus(file_name):
@@ -170,6 +203,25 @@ def two_opt_plus_plus(file_name):
                 break
                 
     return best_order, best_length 
+
+def get_neighbors(route, index):
+    """
+    Get the set of neighboring nodes of a node in a route.
+    
+    Args:
+        route (list): List representing the order of visiting containers.
+        index (int): Index of the node.
+        
+    Returns:
+        set: Set of neighboring nodes.
+    """
+    neighbors = set()
+    num_nodes = len(route)
+    if index > 0:
+        neighbors.add(route[index - 1])
+    if index < num_nodes - 1:
+        neighbors.add(route[index + 1])
+    return neighbors
 
 def calculate_route_length(route, container_coordinates, cache):
     """

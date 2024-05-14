@@ -139,6 +139,8 @@ def select_coordinates(file_path_input):
     array_coordinates = np.array(list_of_lists)
     return array_coordinates
 
+
+
 def two_opt_swap(route, i, k):
     """
     Perform a 2-opt swap operation between two nodes in a route.
@@ -239,3 +241,4 @@ def main(file_name):
 
 def get_full_containers():
     #IMPORT FROM DB
+    pass
