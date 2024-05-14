@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
 from .models import SensorData, TrashIsland, Trashcan
+import sensomatic.datacollector.greedy_2_opt as greedy_2_opt
 
 
 # Create your views here.
@@ -39,3 +40,7 @@ def handle_post(request):
         return JsonResponse({'sleepInterval': trashcan.time_interval}, status = 200)
     else:
         return JsonResponse({'message': 'Invalid request'}, status = 405)
+    
+def sorting_algorithm():
+    full_trashcans = Trashcan.objects.filter(fill_percentage__gte=80).values()
+    

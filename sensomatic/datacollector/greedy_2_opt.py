@@ -228,12 +228,4 @@ def main(file_name):
 
     time_total = t1_stop - t1_start
     
-    # Print the runtime, best order, and best length
-    """
-    print("Runtime:", time_total, "seconds")
-    print("Best order:", best_order)
-    print("Best length:", best_length)
-    print("DONE!!")
-    """
-    
     return best_order, best_length, time_total
