@@ -1,4 +1,3 @@
-// Include
 #include "Adafruit_VL53L1X.h"
 #include <math.h>
 
@@ -10,8 +9,6 @@ Adafruit_VL53L1X vl53 = Adafruit_VL53L1X(XSHUT_PIN, IRQ_PIN);
 
 // Define the number of measurements
 const int NUM_MEASUREMENTS = 1000;
-// Adjust this threshold as needed
-const float OUTLIER_THRESHOLD = 3.0;
 
 void setup() {
   Serial.begin(115200);
@@ -56,39 +53,20 @@ void loop() {
       }
     }
 
-    // Calculate mean
-    float sum = 0;
-    for (int i = 0; i < NUM_MEASUREMENTS; i++) {
-      sum += measurements[i];
-    }
-    float mean = sum / NUM_MEASUREMENTS;
+    // Sort measurements
+    std::sort(measurements, measurements + NUM_MEASUREMENTS);
 
-    // Calculate standard deviation
-    float sumSquaredDiffs = 0;
-    for (int i = 0; i < NUM_MEASUREMENTS; i++) {
-      sumSquaredDiffs += pow(measurements[i] - mean, 2);
-    }
-    float variance = sumSquaredDiffs / NUM_MEASUREMENTS;
-    float standardDeviation = sqrt(variance);
-
-    // Remove outliers
-    int validMeasurements = 0;
-    for (int i = 0; i < NUM_MEASUREMENTS; i++) {
-      if (fabs(measurements[i] - mean) <= OUTLIER_THRESHOLD * standardDeviation) {
-        measurements[validMeasurements++] = measurements[i];
-      }
+    // Calculate median
+    float median;
+    if (NUM_MEASUREMENTS % 2 == 0) {
+      median = (measurements[NUM_MEASUREMENTS / 2 - 1] + measurements[NUM_MEASUREMENTS / 2]) / 2.0;
+    } else {
+      median = measurements[NUM_MEASUREMENTS / 2];
     }
 
-    // Recalculate mean after removing outliers
-    sum = 0;
-    for (int i = 0; i < validMeasurements; i++) {
-      sum += measurements[i];
-    }
-    mean = sum / validMeasurements;
-
-    // Print the mean after removing outliers
-    Serial.print(F("Mean after removing outliers: "));
-    Serial.println(mean);
+    // Print the median
+    Serial.print(F("Median: "));
+    Serial.println(median);
     Serial.println(F("mm"));
 
     vl53.clearInterrupt();

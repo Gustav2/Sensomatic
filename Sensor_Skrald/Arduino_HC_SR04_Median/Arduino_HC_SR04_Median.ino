@@ -35,41 +35,20 @@ void loop() {
   if (measurements_count < NUM_MEASUREMENTS) {
     distances[measurements_count++] = distance;
   } else {
-    // Calculate mean
-    float sum = 0;
-    for (int i = 0; i < NUM_MEASUREMENTS; i++) {
-      sum += distances[i];
-    }
-    float mean = sum / NUM_MEASUREMENTS;
+    // Sort distances
+    std::sort(distances, distances + NUM_MEASUREMENTS);
 
-    // Calculate standard deviation
-    float sumSquaredDiffs = 0;
-    for (int i = 0; i < NUM_MEASUREMENTS; i++) {
-      sumSquaredDiffs += pow(distances[i] - mean, 2);
-    }
-    float variance = sumSquaredDiffs / NUM_MEASUREMENTS;
-    float standardDeviation = sqrt(variance);
-
-    // Remove outliers
-    int validMeasurements = 0;
-    for (int i = 0; i < NUM_MEASUREMENTS; i++) {
-      if (fabs(distances[i] - mean) <= OUTLIER_THRESHOLD * standardDeviation) {
-        validMeasurements++;
-      }
+    // Calculate median
+    float median;
+    if (NUM_MEASUREMENTS % 2 == 0) {
+      median = (distances[NUM_MEASUREMENTS / 2 - 1] + distances[NUM_MEASUREMENTS / 2]) / 2.0;
+    } else {
+      median = distances[NUM_MEASUREMENTS / 2];
     }
 
-    // Recalculate mean after removing outliers
-    float sumWithoutOutliers = 0;
-    for (int i = 0; i < NUM_MEASUREMENTS; i++) {
-      if (fabs(distances[i] - mean) <= OUTLIER_THRESHOLD * standardDeviation) {
-        sumWithoutOutliers += distances[i];
-      }
-    }
-    mean = sumWithoutOutliers / validMeasurements;
-
-    // Print the mean after removing outliers
-    Serial.print("Mean after removing outliers: ");
-    Serial.print(mean);
+    // Print the median
+    Serial.print("Median: ");
+    Serial.println(median*10);
     Serial.println(" mm");
 
     // Reset measurements count for next iteration
