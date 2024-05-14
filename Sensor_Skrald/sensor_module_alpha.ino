@@ -2,12 +2,15 @@
 #include <SPI.h>
 #include <LoRa.h>
 #include <WiFi.h>
+#include <math.h>
 #include "Adafruit_VL53L1X.h"
+#include "esp_sleep.h"
 
 #define IRQ_PIN 18
 #define XSHUT_PIN 19
 
 Adafruit_VL53L1X vl53 = Adafruit_VL53L1X(XSHUT_PIN, IRQ_PIN);
+const int NUM_MEASUREMENTS = 1000;  // Define the number of measurements
 
 // Define the pins used by the LoRa module
 const int csPin = 0;     // LoRa radio chip select
@@ -107,42 +110,38 @@ void setup_lora() {
   // This combination results in an approximate bitrate of 250 bits/second according to TTN
 
   Serial.println("setup_lora() successful");
-}
-
+  }
 void setup_tof() {
+  Serial.begin(115200);
+  while (!Serial) delay(10);
+
   Serial.println(F("Adafruit VL53L1X sensor demo"));
 
   Wire.begin();
-  if (! vl53.begin(0x29, &Wire)) {
+  if (!vl53.begin(0x29, &Wire)) {
     Serial.print(F("Error on init of VL sensor: "));
     Serial.println(vl53.vl_status);
-    while (1)       delay(10);
+    while (1) delay(10);
   }
   Serial.println(F("VL53L1X sensor OK!"));
 
   Serial.print(F("Sensor ID: 0x"));
   Serial.println(vl53.sensorID(), HEX);
 
-  if (! vl53.startRanging()) {
+  if (!vl53.startRanging()) {
     Serial.print(F("Couldn't start ranging: "));
     Serial.println(vl53.vl_status);
-    while (1)       delay(10);
+    while (1) delay(10);
   }
   Serial.println(F("Ranging started"));
 
-  // Valid timing budgets: 15, 20, 33, 50, 100, 200 and 500ms!
   vl53.setTimingBudget(50);
   Serial.print(F("Timing budget (ms): "));
   Serial.println(vl53.getTimingBudget());
-  Serial.println("");
-  /*
-  vl.VL53L1X_SetDistanceThreshold(100, 300, 3, 1);
-  vl.VL53L1X_SetInterruptPolarity(0);
-  */
 
   Serial.println("setup_tof() successful");
 
-}
+  }
 
 void hibernation()  {
   esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH,   ESP_PD_OPTION_OFF);
@@ -152,20 +151,34 @@ void hibernation()  {
   
   esp_sleep_enable_timer_wakeup((sleepInterval - randomDelay) * 1000);
   esp_deep_sleep_start();
-}
+  }
 
 void sensor() {
    // TOF reading part
-  int16_t distance;
+  float measurements[NUM_MEASUREMENTS];
   if (vl53.dataReady()) {
-    // new measurement for the taking!
-    distance = vl53.distance();
-    if (distance == -1) {
-      // something went wrong!
-      Serial.print(F("Couldn't get distance: "));
-      Serial.println(vl53.vl_status);
-      return;
+    // Read distance and store in array
+    for (int i = 0; i < NUM_MEASUREMENTS; i++) {
+      measurements[i] = vl53.distance();
+      if (measurements[i] == -1) {
+        Serial.print(F("Couldn't get distance: "));
+        Serial.println(vl53.vl_status);
+        return;
+      } 
     }
+
+    // Sort measurements
+    std::sort(measurements, measurements + NUM_MEASUREMENTS);
+
+    // Calculate median = distance
+    float distance = 0.0;
+    if (NUM_MEASUREMENTS % 2 == 0) {
+      distance = (measurements[NUM_MEASUREMENTS / 2 - 1] + measurements[NUM_MEASUREMENTS / 2]) / 2.0;
+      } 
+    else {
+      distance = measurements[NUM_MEASUREMENTS / 2];
+      }
+
     Serial.print(F("Distance: "));
     Serial.print(distance);
     Serial.println(" mm");
@@ -187,12 +200,13 @@ void sensor() {
 
     // data is read out, time for another reading!
     vl53.clearInterrupt();
-  }
   // Delay between transmissions
   delay(1000);
+  }
 }
 
 void initialise() {
+  pinMode(LED_BUILTIN, OUTPUT);
   setup_lora();
   delay(100);
   initial_setup();
@@ -200,7 +214,7 @@ void initialise() {
   setup_tof();
   delay(100);
   Serial.println("initialise successful");
-}
+  }
 
 
 
@@ -214,6 +228,7 @@ void setup() {
   delay(500);
   sensor();
   delay(500);
+  digitalWrite(LED_BUILTIN, LOW);
   setupReceived = false;
   Serial.println("");
   Serial.print("Entering sleep for: ");
@@ -221,8 +236,9 @@ void setup() {
   Serial.println("================================================");
   Serial.flush();
   hibernation();
-}
+  }
+
 
 void loop() {
   // loop() is never ran due to the sleep functionality.
-}
+  }
