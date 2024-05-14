@@ -1,0 +1,31 @@
+{% load static %}
+<html>
+
+    <head>
+        <link rel="stylesheet" href="{% static 'stylesheet.css' %}">
+        <title>Administration</title>
+    </head>
+    <body>
+        <div class = "header">
+        <h1>Administration</h1>
+        </div>
+
+        <div class="sidenav">
+        <a href = '/dashboard/'>Dashboard</a>
+        <a href = '/dashboard/historik/'>Historik</a>
+        <a href = '/dashboard/skraldespand/'>Skraldespande</a>
+        <a href = '/dashboard/indstillinger/'>Indstillinger</a>
+            <!-- Her ses logud knappen -->
+        
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Log out</button>
+        </form>
+        </div>
+
+        <div class = "main">
+        {% block content %}{% endblock content %}
+        </div>
+
+    </body>
+</html>

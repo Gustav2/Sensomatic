@@ -1,0 +1,64 @@
+{% extends 'master.html' %}
+{% block content %}
+
+ <!-- Her bliver ruterne hentet -->
+<h3 class="siteHeader">Dashboard</h3>
+<div class="parent">
+ {% for route in routes %}
+<div id="div-color-{{ route.id }}" class="route-user-none" driver-value="{{ route.user }}">
+    <h2>{{route.route_name}}</h2>
+
+ <!-- Her oprettes dropdown menuen -->
+ <select id="{{route.id}}">
+    {% if route.user == None %}
+    <option value="{{route.user}}" selected>{{route.user}}</option>
+    {% for skraldemand in user %}
+    {% if skraldemand != route.user %}
+    <option value="{{ skraldemand }}">{{ skraldemand }}</option>
+    {% endif %}
+    {% endfor %}
+    {% else %}
+    <option value ="None"> None </option>
+    <option value="{{route.user}}" selected>{{route.user}}</option>
+    {% for skraldemand in user %}
+    {% if skraldemand != route.user %}
+    <option value="{{ skraldemand }}">{{ skraldemand }}</option>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+</select>
+
+ <!-- Her kaldes funktionen fra route klassen -->
+{% for adress in route.coordinate_to_adress %}
+<p>{{adress}}</p>
+{% endfor %}
+
+ <!-- Her sendes køreren til databasen -->
+<button id="submitButton", style="float: left;" onclick="sendCall({id:{{route.id}}, driver:document.getElementById({{route.id}}).value})">Submit</button>
+</div>
+
+{% endfor %}
+</div>
+
+
+
+
+ <!-- Dette javascript sender requesten til API'en med dataet -->
+<script>
+async function sendCall(data){
+    const config  = {
+        method: "POST",
+        body: JSON.stringify(data)
+    }
+    fetch("{% url 'add_driver' %}", config).then(res => {
+        console.log("Kører tildelt")
+        location.reload();
+    }).catch(error =>{
+        alert('Der skete en fejl')
+    })
+}
+
+</script>
+
+
+{% endblock content %}

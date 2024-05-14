@@ -14,6 +14,10 @@ const int irqPin = 2;    // Must be a hardware interrupt pin
 const char* ssid = "Sensomatic";
 const char* password = "password12!";
 
+// Variables for sensor data storage
+String msgCount;
+String distance;
+
 // JSON size
 char jsonOutput[128];
 
@@ -58,17 +62,23 @@ void loop() {
 
   int packetSize = LoRa.parsePacket(); // Try to parse the packet
 
-  if (packetSize) {   // When LoRa pakcet received
+  if (packetSize) {   // When LoRa packet received
     Serial.println("Received packet!");
     
     // Read packet
     while (LoRa.available()) {
-      Serial.print((char)LoRa.read());
+      String payload = LoRa.readString();
+      // payload format: msgCount#distance
+      // String example: 45#1900
+      Serial.println(payload); 
+
+      // Read data from string
+      int pos1 = payload.indexOf("#");
+      int pos2 = payload.indexOf("/");
+
+      msgCount = payload.substring(0, pos1);
+      distance = payload.substring(pos1 + 1, payload.length());
     }
- 
-    // Print RSSI of packet
-    Serial.print(" with RSSI ");
-    Serial.println(LoRa.packetRssi()); 
   
     // POST this to the HTTP connection
     if (WiFi.status() == WL_CONNECTED) {
@@ -81,8 +91,9 @@ void loop() {
       StaticJsonDocument<CAPACITY> doc;
 
       JsonObject object = doc.to<JsonObject>();
-      object["sensor"] = "termometer";
-      object["temperature"] = "temp";
+      object["sensor"] = "ToF Distance";
+      object["distance"] = distance;
+      object["message count"] = msgCount;
 
       serializeJson(doc, jsonOutput);
       
@@ -101,6 +112,9 @@ void loop() {
       Serial.println("Error in WiFi connection");
       }
 
-    delay(10000);   // Repeats after 10 seconds
+    // NO DELAY IN THIS CODE
+    // Delay is currently implemented on the individual sensor transmission. 
+    // The gateway relays the LoRa data to the server as fast as possible
+      
     }
  }

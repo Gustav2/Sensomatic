@@ -1,0 +1,11 @@
+[Unit]
+Description=Run the Graphhopper routing engine
+After=network.target
+
+[Service]
+User=ubuntu
+ExecStart=/home/ubuntu/Sensomatic/graphhopper/start_routing.sh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
