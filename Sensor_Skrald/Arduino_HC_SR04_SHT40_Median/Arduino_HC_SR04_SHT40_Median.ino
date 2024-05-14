@@ -11,8 +11,6 @@ NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
 
 // Define the number of measurements
 const int NUM_MEASUREMENTS = 1000;
-// Adjust this threshold as needed
-const float OUTLIER_THRESHOLD = 3.0;
 
 void setup() {
   Serial.begin(115200);
@@ -97,35 +95,19 @@ void loop() {
     measurements[i] = distance;
   }
 
-  // Calculate mean
-  float sum = 0;
-  for (int i = 0; i < NUM_MEASUREMENTS; i++) {
-    sum += measurements[i];
-  }
-  float mean = sum / NUM_MEASUREMENTS;
+  // Sort measurements
+  std::sort(measurements, measurements + NUM_MEASUREMENTS);
 
-  // Calculate standard deviation
-  float sumSquaredDiffs = 0;
-  for (int i = 0; i < NUM_MEASUREMENTS; i++) {
-    sumSquaredDiffs += pow(measurements[i] - mean, 2);
-  }
-  float variance = sumSquaredDiffs / NUM_MEASUREMENTS;
-  float standardDeviation = sqrt(variance);
-
-  // Remove outliers
-  int validMeasurements = 0;
-  float sumWithoutOutliers = 0;
-  for (int i = 0; i < NUM_MEASUREMENTS; i++) {
-    if (fabs(measurements[i] - mean) <= OUTLIER_THRESHOLD * standardDeviation) {
-      validMeasurements++;
-      sumWithoutOutliers += measurements[i];
-    }
+  // Calculate median
+  float median;
+  if (NUM_MEASUREMENTS % 2 == 0) {
+    median = (measurements[NUM_MEASUREMENTS / 2 - 1] + measurements[NUM_MEASUREMENTS / 2]) / 2.0;
+  } else {
+    median = measurements[NUM_MEASUREMENTS / 2];
   }
 
-  // Calculate mean after removing outliers
-  mean = sumWithoutOutliers / validMeasurements;
-
-  //Serial.print("Mean after removing outliers: ");
-  Serial.println(mean*10);
-  //Serial.println(" mm");
+  // Print the median
+  Serial.print("Median: ");
+  Serial.println(median*10); // Convert median from meters to millimeters
+  Serial.println(" mm");
 }
