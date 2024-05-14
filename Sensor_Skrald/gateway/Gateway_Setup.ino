@@ -211,6 +211,7 @@ void loop() {
           }
       }
 
+      else if (String(payload[0]) == "?") {Serial.println("Other gateway packet received, be cautious of interference");}
       else {Serial.println("Erroneous packet received");}
     // NO DELAY IN THIS CODE
     // Delay is currently implemented on the individual sensor transmission. 
