@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/home/jetson/Sensomatic/sensomatic/venv/bin/python3 /home/jetson/Sensomatic/sensomatic/manage.py runserver 0.0.0.0:8000
+ExecStart=/home/ubuntu/Sensomatic/sensomatic/venv/bin/python3 /home/ubuntu/Sensomatic/sensomatic/manage.py runserver 0.0.0.0:8000
 Restart=on-failure
 
 [Install]

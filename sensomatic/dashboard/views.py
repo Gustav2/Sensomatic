@@ -76,23 +76,18 @@ def add_driver(request):
 
 @is_logged_in
 def setting(request):
+    add_trashcan = forms.AddSensor()
+    timeinterval = Trashcan.objects.all()[0].time_interval
+    add_trashisland = forms.AddIsland()
     if request.method == "GET":
-        add_trashcan = forms.AddSensor()
-        timeinterval = Trashcan.objects.all()[0].time_interval
-        add_trashisland = forms.AddIsland()
         return render(request, 'indstillinger.html', context={'add_trashcan':add_trashcan, 'timeinterval':timeinterval, 'add_trashisland':add_trashisland})
     if request.method == 'POST':
-        print(request.POST)
         try:
             if request.POST['islandButton'] == 'islandData':
                 island_data = AddIsland(request.POST)
                 if island_data.is_valid():
                     island_data.save()
     
-
-                add_trashcan = forms.AddSensor()
-                timeinterval = Trashcan.objects.all()[0].time_interval
-                add_trashisland = forms.AddIsland()
                 return render(request, 'indstillinger.html', context={'add_trashcan':add_trashcan, 'timeinterval':timeinterval, 'add_trashisland':add_trashisland})
         except MultiValueDictKeyError:
             pass
@@ -103,9 +98,6 @@ def setting(request):
                 if trashcan_data.is_valid():
                     trashcan_data.save()
 
-                add_trashcan = forms.AddSensor()
-                timeinterval = Trashcan.objects.all()[0].time_interval
-                add_trashisland = forms.AddIsland()
                 return render(request, 'indstillinger.html', context={'add_trashcan':add_trashcan, 'timeinterval':timeinterval, 'add_trashisland':add_trashisland})
         except MultiValueDictKeyError:
             pass

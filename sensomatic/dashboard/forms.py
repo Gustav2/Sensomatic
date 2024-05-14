@@ -1,6 +1,6 @@
 from django import forms
-from django.contrib.auth.models import User
 from datacollector.models import Trashcan, TrashIsland
+
 
 # Denne funktion skaber login felterne
 class LoginForm(forms.Form):
@@ -16,3 +16,4 @@ class AddIsland(forms.ModelForm):
     class Meta:
         model = TrashIsland
         fields = "__all__"
+

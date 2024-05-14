@@ -8,7 +8,7 @@
 <div id="div-color-{{ route.id }}" class="route-user-none" driver-value="{{ route.user }}">
     <h2>{{route.route_name}}</h2>
 
- <!-- Her oprettes dropdown menuen -->
+<p>Ruten er kørt af: </p>
  <div class="historyBoxes">
     <p>{{route.user}}</p>
  </div>
@@ -17,6 +17,8 @@
 {% for adress in route.coordinate_to_adress %}
 <p>{{adress}}</p>
 {% endfor %}
+
+<p>{{route.operating_date}}</p>
 
 </div>
 

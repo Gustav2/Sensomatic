@@ -185,8 +185,6 @@ class NavigationUIActivity :
             for (waypoint in waypoints) {
                 this.addWaypoint(waypoint)
             }
-            this.voiceUnits(DirectionsCriteria.METRIC)
-            this.alternatives(true)
             this.destination(destination)
             this.user("gh")
             this.profile("truck")
@@ -226,12 +224,10 @@ class NavigationUIActivity :
 
         val jsonObjectRequest = JsonObjectRequest(com.android.volley.Request.Method.GET, url, null, { response ->
                 val res : String = response.get("route").toString()
-                Timber.tag("MainActivity").e("res %s", res)
+                Timber.tag("getRoutes").e("res %s", res)
                 res.split(";").forEach {
                     val latlng = it.split(",")
-                    val lat = latlng[0]
-                    val lng = latlng[1]
-                    val point = Point.fromLngLat(lng.toDouble(), lat.toDouble())
+                    val point = Point.fromLngLat(latlng[1].toDouble(), latlng[0].toDouble())
 
                     waypoints.add(point)
                 }
@@ -239,7 +235,7 @@ class NavigationUIActivity :
             },
             { error ->
                 Toast.makeText(this, "An error occured. Username might be wrong, or the server might be down.", Toast.LENGTH_LONG).show()
-                Timber.tag("MainActivity").e("loadDogImage error: " + error.localizedMessage)
+                Timber.tag("getRoutes").e("Fetching route error: " + error.localizedMessage)
             }
         )
 

@@ -1,9 +1,9 @@
 graphhopper:
 
   # OpenStreetMap input file PBF or XML, can be changed via command line -Ddw.graphhopper.datareader.file=some.pbf
-  datareader.file: /home/jetson/graphhopper/den.pbf
+  datareader.file: /home/ubuntu/graphhopper/den.pbf
   # Local folder used by graphhopper to store its data
-  graph.location: /home/jetson/graph-cache
+  graph.location: /home/ubuntu/graph-cache
 
 
   ##### Routing Profiles ####
@@ -27,7 +27,7 @@ graphhopper:
   #
   # To prevent long running routing queries you should usually enable either speed or hybrid mode for all the given
   # profiles (see below). Or at least limit the number of `routing.max_visited_nodes`.
-  custom_models.directory: /home/jetson/Sensomatic/graphhopper/custom_models
+  custom_models.directory: /home/ubuntu/Sensomatic/graphhopper/custom_models
 
   profiles:
     - name: car
