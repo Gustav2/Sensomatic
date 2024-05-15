@@ -10,7 +10,7 @@ class LoginForm(forms.Form):
 class AddSensor(forms.ModelForm):
     class Meta:
         model = Trashcan
-        fields = ["MAC_adress", "island", "type"]
+        fields = ["MAC_adress", "island", "capacity", "type"]
 
 class AddIsland(forms.ModelForm):
     class Meta:

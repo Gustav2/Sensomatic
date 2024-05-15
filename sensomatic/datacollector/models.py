@@ -31,7 +31,7 @@ TRASH_TYPES = (
 
 class Trashcan(models.Model):
     MAC_adress = models.CharField(null = True, max_length=20, unique=True)
-    time_interval = models.IntegerField(null = True)
+    time_interval = models.IntegerField(null = True, default=1)
 
     island = models.ForeignKey(TrashIsland, on_delete=models.SET_NULL, null=True)
     type = models.IntegerField(choices=TRASH_TYPES)
