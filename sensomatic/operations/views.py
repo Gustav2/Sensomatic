@@ -1,7 +1,11 @@
+import json
+
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.shortcuts import render
 
+from datacollector.models import Trashcan
+from .tasks import create_route
 from operations.models import Route
 
 
@@ -29,3 +33,9 @@ def get_route(request, username=None):
         "operating_date": route.operating_date,
         "completed": route.completed
     })
+
+
+def generate_route(request):
+    if request.method == "GET":
+        create_route.delay()
+        return JsonResponse({"detail": "Route generation started"}, status=200)

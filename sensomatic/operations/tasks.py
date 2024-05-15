@@ -8,13 +8,14 @@ import requests
 from datacollector.models import TrashIsland, Trashcan
 
 
-
-
 @shared_task
 def create_route(trashcans=None):
     """
     :param trashcans: list of Trashcan objects
     """
+
+    if trashcans is None:
+        trashcans = Trashcan.objects.all()
 
     url = "https://graphhopper.com/api/1/vrp"
 
@@ -50,6 +51,8 @@ def create_route(trashcans=None):
     }
 
     for trashcan in trashcans:
+        if payload.get("services") is None:
+            payload["services"] = []
         payload["services"].append({
             "id": f"s-{trashcan.id}",
             "address": {
