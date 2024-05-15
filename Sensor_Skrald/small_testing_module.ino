@@ -3,13 +3,13 @@
 #include <LoRa.h>
 #include <WiFi.h>
 #include <math.h>
-#include "Adafruit_VL53L1X.h"
+#include "Adafruit_VL53L0X.h"
 #include "esp_sleep.h"
 
 #define IRQ_PIN 18
 #define XSHUT_PIN 19
 
-Adafruit_VL53L1X vl53 = Adafruit_VL53L1X(XSHUT_PIN, IRQ_PIN);
+Adafruit_VL53L0X lox = Adafruit_VL53L0X();
 const int NUM_MEASUREMENTS = 1000;  // Define the number of measurements
 
 // Define the pins used by the LoRa module
@@ -83,7 +83,6 @@ void initial_setup()  {
     delay(1000);
  }
 
-
 void setup_lora() {
   // Setup LoRa module
   LoRa.setPins(csPin, resetPin, irqPin);
@@ -113,35 +112,20 @@ void setup_lora() {
   }
 void setup_tof() {
   Serial.begin(115200);
-  while (!Serial) delay(10);
 
-  Serial.println(F("Adafruit VL53L1X sensor demo"));
-
-  Wire.begin();
-  if (!vl53.begin(0x29, &Wire)) {
-    Serial.print(F("Error on init of VL sensor: "));
-    Serial.println(vl53.vl_status);
-    while (1) delay(10);
+  // wait until serial port opens for native USB devices
+  while (! Serial) {
+    delay(1);
   }
-  Serial.println(F("VL53L1X sensor OK!"));
-
-  Serial.print(F("Sensor ID: 0x"));
-  Serial.println(vl53.sensorID(), HEX);
-
-  if (!vl53.startRanging()) {
-    Serial.print(F("Couldn't start ranging: "));
-    Serial.println(vl53.vl_status);
-    while (1) delay(10);
+  
+  Serial.println("Adafruit VL53L0X test");
+  if (!lox.begin()) {
+    Serial.println(F("Failed to boot VL53L0X"));
+    while(1);
   }
-  Serial.println(F("Ranging started"));
-
-  vl53.setTimingBudget(50);
-  Serial.print(F("Timing budget (ms): "));
-  Serial.println(vl53.getTimingBudget());
-
-  Serial.println("setup_tof() successful");
-
-  }
+  // power 
+  Serial.println(F("VL53L0X API Simple Ranging example\n\n")); 
+}
 
 void hibernation()  {
   esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH,   ESP_PD_OPTION_OFF);
@@ -154,30 +138,20 @@ void hibernation()  {
   }
 
 void sensor() {
-   // TOF reading part
-  float measurements[NUM_MEASUREMENTS];
-  if (vl53.dataReady()) {
-    // Read distance and store in array
-    for (int i = 0; i < NUM_MEASUREMENTS; i++) {
-      measurements[i] = vl53.distance();
-      if (measurements[i] == -1) {
-        Serial.print(F("Couldn't get distance: "));
-        Serial.println(vl53.vl_status);
-        return;
-      } 
-    }
+  VL53L0X_RangingMeasurementData_t measure;
+    
+  Serial.print("Reading a measurement... ");
+  lox.rangingTest(&measure, false); // pass in 'true' to get debug data printout!
 
-    // Sort measurements
-    std::sort(measurements, measurements + NUM_MEASUREMENTS);
+  if (measure.RangeStatus != 4) {  // phase failures have incorrect data
+    Serial.print("Distance (mm): "); Serial.println(measure.RangeMilliMeter);
+  } else {
+    Serial.println(" out of range ");
+  }
+    
+    int distance = measure.RangeMilliMeter;
 
-    // Calculate median = distance
-    float distance = 0.0;
-    if (NUM_MEASUREMENTS % 2 == 0) {
-      distance = (measurements[NUM_MEASUREMENTS / 2 - 1] + measurements[NUM_MEASUREMENTS / 2]) / 2.0;
-      } 
-    else {
-      distance = measurements[NUM_MEASUREMENTS / 2];
-      }
+    delay(100);
 
     Serial.print(F("Distance: "));
     Serial.print(distance);
@@ -199,13 +173,9 @@ void sensor() {
     LoRa.beginPacket();
     LoRa.print(payload);
     LoRa.endPacket();
-
-    // data is read out, time for another reading!
-    vl53.clearInterrupt();
   // Delay between transmissions
   delay(1000);
   }
-}
 
 void initialise() {
   pinMode(LED_BUILTIN, OUTPUT);
