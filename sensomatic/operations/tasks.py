@@ -20,6 +20,7 @@ def create_route(trashcans=None):
     url = "https://graphhopper.com/api/1/vrp"
 
     query = {}
+    query["key"] = ""
 
 
     headers = {"Content-Type": "application/json"}
