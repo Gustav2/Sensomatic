@@ -8,12 +8,18 @@
     <b>Indstil tidsintervallet mellem data forsendelserne</b>
     <br>
     <br>
-    <input type="range" min="0" max="24" value="{{ timeinterval }}" class="slider" id="tidsinterval">
-    <p><span id="intervalOutput"></span> Timer</p>
+    <input type="range" min="0" max="24" value="{{ timer }}" class="slider" id="tidsinterval">
+
+    <input type="range" min="0" max="60" value="{{ minutter }}" class="slider" id="minutinterval">
+    <p><input type='text' onkeypress='validate(event)' id="intervalOutput" value="{{ timer }}"> Timer <input type='text' onkeypress='validate(event)' id="minutOutput" value="{{ minutter }}"> Minutter</p>
+
 
   <button id="submitButton", style="float: left;" onclick="sendTimeinterval()">Submit</button>
   <br>
   </div>
+
+  <div id="succesMessage">Tidsinterval er tildelt</div>
+  <div id="failMessage">Det er et ugyldtigt tidsinterval</div>
 
 
   <div class="divIndstillinger">
@@ -41,26 +47,65 @@
   <script>
 
     async function sendTimeinterval(){
-        const timeinterval = document.getElementById( "tidsinterval").value
+        const timeinterval = document.getElementById( "intervalOutput").value
+        const minuteinterval = document.getElementById( "minutOutput").value
+        var succes = document.getElementById("succesMessage");
+        var fail = document.getElementById("failMessage");
         const config  = {
             method: "POST",
-            body: JSON.stringify({timeinterval : timeinterval})
+            body: JSON.stringify({timeinterval : timeinterval, minuteinterval : minuteinterval})
         }
-        fetch("{% url 'set_timeinterval' %}", config).then(res => {
-            console.log("Tidsinterval tildelt")
-        }).catch(error =>{
-            alert('Der skete en fejl')
-        })
-    }
+        if (timeinterval<=24 && minuteinterval<=60){
+          fetch("{% url 'set_timeinterval' %}", config).then(res => {
+              console.log("Tidsinterval tildelt")
+              succes.className = "show";
+              setTimeout(function(){ succes.className = succes.className.replace("show", ""); }, 3000);
+          }).catch(error =>{
+              alert('Der skete en fejl')
+          })
+        }
+        else{
+          fail.className = "show";
+          setTimeout(function(){ fail.className = fail.className.replace("show", ""); }, 3000);
+        }
+      }
+
+
 
 
     var slider = document.getElementById("tidsinterval");
-    var output = document.getElementById("intervalOutput");
-    output.innerHTML = slider.value;
+    var timeoutput = document.getElementById("intervalOutput");
+    timeoutput.value = slider.value;
 
     slider.oninput = function() {
-    output.innerHTML = this.value;
+    timeoutput.value = this.value;
     }
+
+    var slider = document.getElementById("minutinterval");
+    var minuteoutput = document.getElementById("minutOutput");
+    minuteoutput.value = slider.value;
+
+    slider.oninput = function() {
+    minuteoutput.value = this.value;
+    }
+
+  function validate(evt) {
+  var theEvent = evt || window.event;
+
+  // Handle paste
+  if (theEvent.type === 'paste') {
+      key = event.clipboardData.getData('text/plain');
+  } else {
+  // Handle key press
+      var key = theEvent.keyCode || theEvent.which;
+      key = String.fromCharCode(key);
+  }
+  var regex = /[0-9]|\./;
+  if( !regex.test(key) ) {
+    theEvent.returnValue = false;
+    if(theEvent.preventDefault) theEvent.preventDefault();
+  }
+}
 
 
   </script>
