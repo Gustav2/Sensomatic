@@ -6,5 +6,5 @@ from .models import TrashIsland, Trashcan, SensorData
 admin.site.register(TrashIsland)
 admin.site.register(Trashcan)
 class SensorDataAdmin(admin.ModelAdmin):
-    list_display = ('trashcan', 'distance', 'created_at')
+    list_display = ('trashcan', 'fill_percentage', 'created_at')
 admin.site.register(SensorData, SensorDataAdmin)
