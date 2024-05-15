@@ -21,7 +21,7 @@ const int irqPin = 2;    // Must be a hardware interrupt pin
 const char* ssid = "Sensomatic";
 const char* password = "password12!";
 
-const char* httpDestination = "http://192.168.0.102:8000/datacollector/handle_post/";
+const char* httpDestination = "https://api.faauzite.com/datacollector/handle_post/";
 
 // Information for NTP connection
 const char* ntpServer = "pool.ntp.org";
@@ -34,7 +34,7 @@ unsigned long epochTime;
 String distance;
 
 int NTP;
-int sleepInterval = 60000;
+int sleepInterval = 1; // Default in minutes
 
 // JSON size
 char jsonOutput[128];
@@ -189,11 +189,9 @@ void loop() {
           
           deserializeJson(doc, jsonResponse);
           
-          //int sleepIntervalHours = doc["sleepInterval"];
+          int sleepIntervalMinutes = doc["sleepInterval"];
           
-          //sleepInterval = sleepIntervalHours * 3600000; // Converts hours to milliseconds
-
-          sleepInterval = 60000;
+          sleepInterval = sleepIntervalMinutes * 60000; // Converts hours to milliseconds
           
           Serial.print("httpResponseCode: ");
           Serial.println(httpResponseCode);
