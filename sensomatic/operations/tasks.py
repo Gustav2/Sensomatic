@@ -1,3 +1,9 @@
+import os
+import django
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'sensomatic.settings')
+django.setup()
+
 import json
 from datetime import datetime
 
@@ -9,13 +15,12 @@ from datacollector.models import TrashIsland, Trashcan
 
 
 @shared_task
-def create_route(trashcans=None):
+def create_route():
     """
     :param trashcans: list of Trashcan objects
     """
 
-    if trashcans is None:
-        trashcans = Trashcan.objects.all()
+    trashcans = Trashcan.objects.all()
 
     url = "https://graphhopper.com/api/1/vrp"
 
