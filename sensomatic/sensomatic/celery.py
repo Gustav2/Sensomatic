@@ -18,12 +18,4 @@ def setup_periodic_tasks(sender, **kwargs):
         crontab(minute='*/1'),
         sender.signature('operations.tasks.create_route'),
     )
-    sender.add_periodic_task(
-        crontab(minute='*/1'),
-        test.s(),
-    )
 
-
-@app.task
-def test():
-    print('test')
