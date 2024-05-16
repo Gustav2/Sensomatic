@@ -306,5 +306,5 @@ def Run():
     for types in Type_list:
         i = 0
         best_order = main(i) 
-        Route.objects.create(user=None, adresses=best_order, route_name=types, operating_date=datetime.now().day())
+        Route.objects.create(user=None, adresses=best_order, route_name=types, operating_date=datetime.now().date())
         i = i+1
