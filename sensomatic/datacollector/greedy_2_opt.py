@@ -115,15 +115,6 @@ def select_coordinates(file_path_input):
     Returns:
         numpy.ndarray: Array containing container coordinates.
     """
-    list_of_lists = []
-    """
-    with open(file_path_input, 'r') as file:
-        for line in file:
-            coordinates = [coord.strip() for coord in line.split(',')]
-            coordinates = list(filter(None, coordinates))
-            list_of_lists.append(coordinates)
-    array_coordinates = np.array(list_of_lists)
-    """
     
     #Indhent fra Django -> 
     #full_trashcans = Trashcan.objects.filter(fill_percentage__gte=80).values()
@@ -289,7 +280,9 @@ def main(file_name):
     print("Best length:", best_length)
     print("DONE!!")
     """
-    return convert_best_order(best_order, container_coordinates)
+    
+    # smid i DB
+    convert_best_order(best_order, container_coordinates)
 
 def convert_best_order(best_order, container_coordinates):
     list_of_best_coordinates = [container_coordinates[i] for i in best_order]
