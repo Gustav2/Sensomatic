@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import numpy as np
 import requests
 from time import perf_counter
@@ -302,10 +302,9 @@ def convert_best_order(best_order, container_coordinates):
 def Run():
     """Runs the algorithem for all Types and adds the route to the DB
     """
-    clock = datetime.datetime.now()
     Type_list = ["Restaffald", "Glas", "Papir/Pap","Metal/Plastik", "Batteri", "Elektronik"]
     for types in Type_list:
         i = 0
         best_order = main(i) 
-        Route.objects.create(adresses=best_order, route_name=types, operating_date=clock.date)
+        Route.objects.create(user=None, adresses=best_order, route_name=types, operating_date=datetime.now().day())
         i = i+1
