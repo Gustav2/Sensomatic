@@ -92,7 +92,9 @@ def select_coordinates(file_path_input):
             coordinates = list(filter(None, coordinates))
             list_of_lists.append(coordinates)
     print(list_of_lists)
+    
     array_coordinates = np.array(list_of_lists)
+    print(array_coordinates.shape)
     return array_coordinates
 
 def main():
@@ -100,7 +102,7 @@ def main():
     t1_start = perf_counter()
 
     # Read containeres from a file and find the shortest path
-    containere_coordinates = select_coordinates("Sort_algo\Realistic_coordinates.txt")
+    containere_coordinates = select_coordinates("Sort_algo\Coordinates_for_test\coordinates_5.txt")
     print(len(containere_coordinates))
     best_order, best_length = algorithm(containere_coordinates)
     

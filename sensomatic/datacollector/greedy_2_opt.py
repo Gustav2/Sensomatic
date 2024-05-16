@@ -2,6 +2,8 @@
 import numpy as np
 import requests
 from time import perf_counter
+from .models import Trashcan
+
 
 def greedy(container_coordinates, cache):
     """
@@ -114,13 +116,26 @@ def select_coordinates(file_path_input):
         numpy.ndarray: Array containing container coordinates.
     """
     list_of_lists = []
+    """
     with open(file_path_input, 'r') as file:
         for line in file:
             coordinates = [coord.strip() for coord in line.split(',')]
             coordinates = list(filter(None, coordinates))
             list_of_lists.append(coordinates)
     array_coordinates = np.array(list_of_lists)
-    return array_coordinates
+    """
+    
+    #Indhent fra Django -> 
+    #full_trashcans = Trashcan.objects.filter(fill_percentage__gte=80).values()
+    
+# Opret et tomt NumPy-array med passende form
+    num_trashcans = len(full_trashcans) 
+    trashcan_array = np.empty((num_trashcans, 2), dtype=float)
+
+# Fyld NumPy-arrayet med koordinaterne fra full_trashcans
+    for i, trashcan in enumerate(full_trashcans):
+        trashcan_array[i] = [trashcan['x'], trashcan['y']]
+    return trashcan_array
 
 def two_opt_plus_plus_swap(route, i, k):
     """
@@ -202,7 +217,7 @@ def two_opt_plus_plus(file_name):
             if improved:
                 break
                 
-    return best_order, best_length 
+    return best_order, best_length, container_coordinates
 
 def get_neighbors(route, index):
     """
@@ -238,7 +253,7 @@ def calculate_route_length(route, container_coordinates, cache):
     length = 0
     for i in range(len(route) - 1):
         start = container_coordinates[route[i]]
-        end = container_coordinates[route[i + end]]
+        end = container_coordinates[route[i + 1]]
         if (start.tobytes(), end.tobytes()) in cache:
             length += cache[(start.tobytes(), end.tobytes())]
         else:
@@ -261,7 +276,7 @@ def main(file_name):
     """
     # Start the timer
     t1_start = perf_counter()
-    best_order, best_length = two_opt_plus_plus(file_name)
+    best_order, best_length, container_coordinates = two_opt_plus_plus(file_name)
     # Stop the timer
     t1_stop = perf_counter()
 
@@ -274,10 +289,10 @@ def main(file_name):
     print("Best length:", best_length)
     print("DONE!!")
     """
-    
-    
-    return best_order, best_length, time_total
+    return convert_best_order(best_order, container_coordinates)
 
-def get_full_containers():
-    #IMPORT FROM DB 
-    pass
+def convert_best_order(best_order, container_coordinates):
+    list_of_best_coordinates = [container_coordinates[i] for i in best_order]
+    best_order_coordinates_list = [f"{point[0]};{point[1]}" for point in list_of_best_coordinates]
+    best_order_str = ";".join(best_order_coordinates_list)
+    return best_order_str
