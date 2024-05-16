@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import numpy as np
 import requests
 from time import perf_counter
@@ -183,7 +183,7 @@ def two_opt_plus_plus(Type):
     Implement the 2-opt++ algorithm to optimize the route.
     
     Args:
-        Type (str): Name of the type of container.
+        Type (int): Name of the type of container.
         
     Returns:
         best_order (list): A list containing the best order of visiting containers.
@@ -259,7 +259,7 @@ def main(Type):
     Main function to execute the 2-opt++ algorithm and print the results.
     
     Args:
-        file_name (str): Name of the file containing container coordinates.
+        Type (int): Name of the file containing container coordinates.
     
     Returns:
         best_order_str (list): A string containing the best order of visiting containers.
@@ -295,17 +295,16 @@ def convert_best_order(best_order, container_coordinates):
         str: string of coordinates for the best route
     """
     list_of_best_coordinates = [container_coordinates[i] for i in best_order]
-    best_order_coordinates_list = [f"{point[0]},{point[1]}" for point in list_of_best_coordinates]
+    best_order_coordinates_list = [f"{point[1]},{point[0]}" for point in list_of_best_coordinates]
     best_order_str = ";".join(best_order_coordinates_list)
     return best_order_str
 
 def Run():
     """Runs the algorithem for all Types and adds the route to the DB
     """
-    clock = datetime.datetime.now()
     Type_list = ["Restaffald", "Glas", "Papir/Pap","Metal/Plastik", "Batteri", "Elektronik"]
     for types in Type_list:
         i = 0
         best_order = main(i) 
-        Route.objects.create(adresses=best_order, route_name=types, operating_date=clock.date)
+        Route.objects.create(user=None, adresses=best_order, route_name=types, operating_date=datetime.now().date())
         i = i+1
