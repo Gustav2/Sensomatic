@@ -208,7 +208,7 @@ def two_opt_plus_plus(Type):
                     break
             if improved:
                 break
-                
+    
     return best_order, best_length, container_coordinates
 
 def get_neighbors(route, index):
@@ -294,8 +294,11 @@ def convert_best_order(best_order, container_coordinates):
     Returns:
         str: string of coordinates for the best route
     """
+    
     list_of_best_coordinates = [container_coordinates[i] for i in best_order]
     best_order_coordinates_list = [f"{point[1]},{point[0]}" for point in list_of_best_coordinates]
+    best_order_coordinates_list.append(["57.026380, 9.921765"])
+    best_order_coordinates_list.insert(0, ["57.026380, 9.921765"])
     best_order_str = ";".join(best_order_coordinates_list)
     return best_order_str
 
