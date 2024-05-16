@@ -306,6 +306,6 @@ def Run():
     Type_list = ["Restaffald", "Glas", "Papir/Pap","Metal/Plastik", "Batteri", "Elektronik"]
     for types in Type_list:
         i = 0
-        best_order = main(Type_list[i]) 
+        best_order = main(i) 
         Route.objects.create(adresses=best_order, route_name=types, operating_date=clock.date)
         i = i+1
