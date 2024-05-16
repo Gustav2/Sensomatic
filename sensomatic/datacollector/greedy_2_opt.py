@@ -117,7 +117,7 @@ def select_coordinates(file_path_input):
     """
     
     #Indhent fra Django -> 
-    #full_trashcans = Trashcan.objects.filter(fill_percentage__gte=80).values()
+    full_trashcans = Trashcan.objects.filter(fill_percentage__gte=80)
     
 # Opret et tomt NumPy-array med passende form
     num_trashcans = len(full_trashcans) 
@@ -125,7 +125,7 @@ def select_coordinates(file_path_input):
 
 # Fyld NumPy-arrayet med koordinaterne fra full_trashcans
     for i, trashcan in enumerate(full_trashcans):
-        trashcan_array[i] = [trashcan['x'], trashcan['y']]
+        trashcan_array[i] = [f'{trashcan.island.longitude}', f'{trashcan.island.latitude}']
     return trashcan_array
 
 def two_opt_plus_plus_swap(route, i, k):
