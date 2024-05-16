@@ -1,5 +1,7 @@
     .parent {
         display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
     }
 
 
@@ -34,7 +36,7 @@
     }
 
     .sidenav {
-        width: 170px;
+        width: 11%;
         position: fixed;
         z-index: 1;
         top: 20px;
@@ -101,6 +103,7 @@
         border: 2px solid black;
         padding: 25px;
         margin: 20px;
+        box-sizing: border-box;
       }
 
 
