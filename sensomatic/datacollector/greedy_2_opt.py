@@ -111,7 +111,7 @@ def select_coordinates(Type):
     Read container coordinates from a file.
     
     Args:
-        file_path_input (str): Path to the input file containing container coordinates.
+        Type (str): Name of the type of container.
         
     Returns:
         numpy.ndarray: Array containing container coordinates.
@@ -183,7 +183,7 @@ def two_opt_plus_plus(Type):
     Implement the 2-opt++ algorithm to optimize the route.
     
     Args:
-        file_name (str): Name of the file containing container coordinates.
+        Type (str): Name of the type of container.
         
     Returns:
         best_order (list): A list containing the best order of visiting containers.
@@ -262,9 +262,7 @@ def main(Type):
         file_name (str): Name of the file containing container coordinates.
     
     Returns:
-        best_order (list): A list containing the best order of visiting containers.
-        best_length (float): Float value of the route length in meters.
-        time_total (float): Time it took to calculate
+        best_order_str (list): A string containing the best order of visiting containers.
     """
     # Start the timer
     t1_start = perf_counter()
@@ -287,12 +285,23 @@ def main(Type):
     
 
 def convert_best_order(best_order, container_coordinates):
+    """Converts list of container order to a useable string
+
+    Args:
+        best_order (list): List of the best route
+        container_coordinates (list): List of container coordinates
+
+    Returns:
+        str: string of coordinates for the best route
+    """
     list_of_best_coordinates = [container_coordinates[i] for i in best_order]
     best_order_coordinates_list = [f"{point[0]},{point[1]}" for point in list_of_best_coordinates]
     best_order_str = ";".join(best_order_coordinates_list)
     return best_order_str
 
 def Run():
+    """Rns the algorithem for all Types and adds the route to the DB
+    """
     clock = datetime.datetime.now()
     Type_list = ["Restaffald", "Glas", "Papir/Pap","Metal/Plastik", "Batteri", "Elektronik"]
     for i in Type_list:
