@@ -297,9 +297,8 @@ def convert_best_order(best_order, container_coordinates):
     
     list_of_best_coordinates = [container_coordinates[i] for i in best_order]
     best_order_coordinates_list = [f"{point[1]},{point[0]}" for point in list_of_best_coordinates]
-    best_order_coordinates_list.append(["57.026380, 9.921765"])
-    best_order_coordinates_list.insert(0, ["57.026380, 9.921765"])
     best_order_str = ";".join(best_order_coordinates_list)
+    best_order_str = "57.026380, 9.921765;"+best_order_str+";57.026380, 9.921765"
     return best_order_str
 
 def Run():
