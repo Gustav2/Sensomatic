@@ -304,6 +304,6 @@ def Run():
     """
     clock = datetime.datetime.now()
     Type_list = ["Restaffald", "Glas", "Papir/Pap","Metal/Plastik", "Batteri", "Elektronik"]
-    for i in Type_list:
-        best_order = main(i) 
-        Route.objects.create(adresses=best_order, route_name=i, operating_date=clock.date)
+    for types in Type_list:
+        best_order = main(types) 
+        Route.objects.create(adresses=best_order, route_name=types, operating_date=clock.date)
