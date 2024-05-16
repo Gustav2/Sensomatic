@@ -22,7 +22,7 @@ class Route(models.Model):
         geolocator = Nominatim(user_agent="Chrome/122.0.0.0")
         adress_list =[]
         first_coordinate=self.adresses.split(";")[1]
-        last_coordinate=self.adresses.rsplit(";")[1]
+        last_coordinate=self.adresses.split(";")[:-1]
 
         first_adress = geolocator.reverse(first_coordinate)
         raw_firstadress = first_adress.raw
