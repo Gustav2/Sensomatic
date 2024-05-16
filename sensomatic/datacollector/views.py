@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
 from .models import SensorData, TrashIsland, Trashcan
-import .greedy_2_opt
+from .greedy_2_opt import Run
 
 
 
@@ -45,6 +45,6 @@ def handle_post(request):
 @csrf_exempt
 def sorting_algorithm(request):
     if request.method == "GET":
-        greedy_2_opt.Run()
+        Run()
         return JsonResponse({'message': 'Sorting algorithm executed'}, status = 200)
     
