@@ -78,9 +78,11 @@ def add_driver(request):
 def setting(request):
     add_trashcan = forms.AddSensor()
     timeinterval = Trashcan.objects.all()[0].time_interval
+    timer = timeinterval // 60
+    minutter = timeinterval % 60
     add_trashisland = forms.AddIsland()
     if request.method == "GET":
-        return render(request, 'indstillinger.html', context={'add_trashcan':add_trashcan, 'timeinterval':timeinterval, 'add_trashisland':add_trashisland})
+        return render(request, 'indstillinger.html', context={'add_trashcan':add_trashcan, 'timer':timer, 'minutter':minutter, 'add_trashisland':add_trashisland})
     if request.method == 'POST':
         try:
             if request.POST['islandButton'] == 'islandData':
@@ -107,9 +109,11 @@ def set_timeinterval(request):
     if request.method == 'POST':
         timeinterval = json.loads(request.body)
         hour = timeinterval.get('timeinterval')
+        minute = timeinterval.get('minuteinterval')
         sensor = Trashcan.objects.all()
+        hourtominutes = int(hour)*60+int(minute)
         for trashcan in sensor:
-            trashcan.time_interval = hour
+            trashcan.time_interval = hourtominutes
             trashcan.save()
     return JsonResponse({'message':'Timeinterval assigned succesfully'}, status = 200)
 
