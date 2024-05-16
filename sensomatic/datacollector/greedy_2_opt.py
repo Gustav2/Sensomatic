@@ -300,7 +300,7 @@ def convert_best_order(best_order, container_coordinates):
     return best_order_str
 
 def Run():
-    """Rns the algorithem for all Types and adds the route to the DB
+    """Runs the algorithem for all Types and adds the route to the DB
     """
     clock = datetime.datetime.now()
     Type_list = ["Restaffald", "Glas", "Papir/Pap","Metal/Plastik", "Batteri", "Elektronik"]
