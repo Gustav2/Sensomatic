@@ -1,8 +1,9 @@
-
+import datetime
 import numpy as np
 import requests
 from time import perf_counter
 from .models import Trashcan
+from operations.models import Route
 
 
 def greedy(container_coordinates, cache):
@@ -105,7 +106,7 @@ def get_dist_p2p(point_start, point_end):
     
     return data_final
 
-def select_coordinates(file_path_input):
+def select_coordinates(Type):
     """
     Read container coordinates from a file.
     
@@ -117,7 +118,7 @@ def select_coordinates(file_path_input):
     """
     
     #Indhent fra Django -> 
-    full_trashcans = Trashcan.objects.filter(fill_percentage__gte=80)
+    full_trashcans = Trashcan.objects.filter(fill_percentage__gte=80).filter(type=Type)
     
 # Opret et tomt NumPy-array med passende form
     num_trashcans = len(full_trashcans) 
@@ -177,7 +178,7 @@ def two_opt_swap(route, i, k):
     new_route = route[:i] + route[i:k+1][::-1] + route[k+1:]
     return new_route
 
-def two_opt_plus_plus(file_name):
+def two_opt_plus_plus(Type):
     """
     Implement the 2-opt++ algorithm to optimize the route.
     
@@ -188,7 +189,7 @@ def two_opt_plus_plus(file_name):
         best_order (list): A list containing the best order of visiting containers.
         best_length (float): Float value of the route length in meters.
     """
-    container_coordinates = select_coordinates(file_name)
+    container_coordinates = select_coordinates(Type)
     cache = {}
     best_order, best_length = greedy(container_coordinates, cache)
     
@@ -253,7 +254,7 @@ def calculate_route_length(route, container_coordinates, cache):
             length += distance
     return length
     
-def main(file_name):
+def main(Type):
     """
     Main function to execute the 2-opt++ algorithm and print the results.
     
@@ -267,7 +268,7 @@ def main(file_name):
     """
     # Start the timer
     t1_start = perf_counter()
-    best_order, best_length, container_coordinates = two_opt_plus_plus(file_name)
+    best_order, best_length, container_coordinates = two_opt_plus_plus(Type)
     # Stop the timer
     t1_stop = perf_counter()
 
@@ -280,12 +281,20 @@ def main(file_name):
     print("Best length:", best_length)
     print("DONE!!")
     """
+    best_order_str = convert_best_order(best_order, container_coordinates)
+    return best_order_str
+
     
-    # smid i DB
-    convert_best_order(best_order, container_coordinates)
 
 def convert_best_order(best_order, container_coordinates):
     list_of_best_coordinates = [container_coordinates[i] for i in best_order]
     best_order_coordinates_list = [f"{point[0]};{point[1]}" for point in list_of_best_coordinates]
     best_order_str = ";".join(best_order_coordinates_list)
     return best_order_str
+
+def Run():
+    clock = datetime.datetime.now()
+    Type_list = ["Restaffald", "Glas", "Papir/Pap","Metal/Plastik", "Batteri", "Elektronik"]
+    for i in Type_list:
+        best_order = main(i) 
+        Route.objects.create(adresses=best_order, route_name=i, operating_date=clock.date)
