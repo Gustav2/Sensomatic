@@ -304,9 +304,9 @@ def convert_best_order(best_order, container_coordinates):
 def Run():
     """Runs the algorithem for all Types and adds the route to the DB
     """
+    i = 0
     Type_list = ["Restaffald", "Glas", "Papir/Pap","Metal/Plastik", "Batteri", "Elektronik"]
     for types in Type_list:
-        i = 0
         best_order = main(i) 
         Route.objects.create(user=None, adresses=best_order, route_name=types, operating_date=datetime.now().date())
         i = i+1
