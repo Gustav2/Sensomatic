@@ -21,8 +21,8 @@ class Route(models.Model):
     def coordinate_to_adress(self):
         geolocator = Nominatim(user_agent="Chrome/122.0.0.0")
         adress_list =[]
-        first_coordinate=self.adresses.split(";",1)[0]
-        last_coordinate=self.adresses.rsplit(";",1)[1]
+        first_coordinate=self.adresses.split(";")[1]
+        last_coordinate=self.adresses.rsplit(";")[1]
 
         first_adress = geolocator.reverse(first_coordinate)
         raw_firstadress = first_adress.raw
