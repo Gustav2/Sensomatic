@@ -118,7 +118,7 @@ def select_coordinates(Type):
     """
     
     #Indhent fra Django -> 
-    full_trashcans = Trashcan.objects.filter(fill_percentage__gte=80).filter(type=Type)
+    full_trashcans = Trashcan.objects.filter(fill_percentage__gte=80, type=Type).values()
     
 # Opret et tomt NumPy-array med passende form
     num_trashcans = len(full_trashcans) 
