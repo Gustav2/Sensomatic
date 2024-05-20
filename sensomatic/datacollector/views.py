@@ -116,7 +116,7 @@ def api_sort(request):
         address_string = ""
 
         for address in data["solution"]["routes"][0]["activities"]:
-            address_string += f"{address['address']['lon']},{address['address']['lat']};"
+            address_string += f"{address['address']['lat']},{address['address']['lon']};"
 
         print(address_string)
 
