@@ -61,7 +61,7 @@ def api_sort(request):
         :param trashcans: list of Trashcan objects
         """
 
-        trashcans = Trashcan.objects.all()
+        trashcans = Trashcan.objects.filter(fill_percentage__gte=80)
 
         url = "https://graphhopper.com/api/1/vrp"
 
