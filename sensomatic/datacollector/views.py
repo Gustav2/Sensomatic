@@ -170,5 +170,5 @@ def all_route(request):
                 print(location.latitude)
                 print(location.longitude)
                 coordinate_string += f'{location.latitude},{location.longitude};'
-            Route.objects.create(addresses=coordinate_string, operating_date=datetime.now().date(), route_name="Rute 1")
+            Route.objects.create(adresses=coordinate_string, operating_date=datetime.now().date(), route_name="Rute 1")
         return JsonResponse({'message': 'Addresses imported'}, status=200)
