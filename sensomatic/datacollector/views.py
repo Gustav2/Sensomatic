@@ -153,3 +153,22 @@ def import_addresses(request):
                 island, created = TrashIsland.objects.get_or_create(street_name=row[0], street_number=address[0], zip_code=row[1], latitude=location.latitude, longitude=location.longitude)
                 Trashcan.objects.create(MAC_adress=i, time_interval=1, island=island, type=0, capacity=100, fill_percentage=0)
         return JsonResponse({'message': 'Addresses imported'}, status = 200)
+
+@csrf_exempt
+def all_route(request):
+    if request.method == "GET":
+        with open('streets.csv', 'r') as f:
+            reader = csv.reader(f)
+            coordinate_string = ""
+            for i, row in enumerate(reader):
+                print(row)
+                address = f'{row[0]} {row[1]}'
+                location = geopy.geocoders.Nominatim(user_agent="Ch").geocode(address)
+                if not location:
+                    continue
+                print(location)
+                print(location.latitude)
+                print(location.longitude)
+                coordinate_string += f'{location.latitude},{location.longitude};'
+            Route.objects.create(addresses=coordinate_string, operating_date=datetime.now().date(), route_name="Rute 1")
+        return JsonResponse({'message': 'Addresses imported'}, status=200)
