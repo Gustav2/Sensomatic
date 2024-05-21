@@ -12,6 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import SensorData, TrashIsland, Trashcan
 from .greedy_2_opt import Run
 from operations.models import Route
+import random
 
 
 # Create your views here.
@@ -172,3 +173,23 @@ def all_route(request):
                 coordinate_string += f'{location.latitude},{location.longitude};'
             Route.objects.create(adresses=coordinate_string, operating_date=datetime.now().date(), route_name="Rute 1")
         return JsonResponse({'message': 'Addresses imported'}, status=200)
+
+
+@csrf_exempt
+def route_from_percentage(request, percentage=80):
+    if request.method == "GET":
+        trashcans = Trashcan.objects.all()
+        for trashcan in trashcans:
+            trashcan.fill_percentage = 0
+            trashcan.save()
+
+        amount_of_trashcans = len(trashcans) * percentage // 100
+
+        trashcans = random.sample(list(trashcans), amount_of_trashcans)
+
+        for trashcan in trashcans:
+            trashcan.fill_percentage = 100
+            trashcan.save()
+
+        return JsonResponse({'message': f'Filled {percentage}% trashcans'}, status=200)
+
