@@ -38,7 +38,7 @@ void initial_setup()  {
     delay(1000);
     
     unsigned long startTime;
-    unsigned long waitTime = 5000;
+    unsigned long waitTime = 15000;
 
     startTime = millis();
     while (millis() - startTime < waitTime)  {
@@ -218,6 +218,8 @@ void initialise() {
   Serial.println("initialise successful");
   }
 
+
+
 void setup() {
   Serial.begin(115200);
   Serial.println("------------------------------------------------");
@@ -237,6 +239,7 @@ void setup() {
   Serial.flush();
   hibernation();
   }
+
 
 void loop() {
   // loop() is never ran due to the sleep functionality.
