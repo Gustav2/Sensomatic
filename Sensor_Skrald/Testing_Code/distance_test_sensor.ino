@@ -202,7 +202,7 @@ void sensor() {
     // data is read out, time for another reading!
     vl53.clearInterrupt();
   // Delay between transmissions
-  delay(1000);
+  delay(200);
   }
 }
 
@@ -232,7 +232,7 @@ void loop() {
   Serial.println("@requestSetup package sent!");
 
   unsigned long startTime;
-  unsigned long waitTime = 5000;
+  unsigned long waitTime = 15000;
 
   startTime = millis();
   while (millis() - startTime < waitTime)  {

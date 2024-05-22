@@ -93,7 +93,7 @@ void setup() {
   while (!Serial)
     ;
 
-  wifi_setup();
+  //wifi_setup();
   configTime(0, 0, ntpServer);
   lora_setup();
 }
@@ -129,14 +129,14 @@ void loop() {
 
       if (String(payload[0]) == "@") {
         Serial.println("Setup request received");
-        epochTime = getTime();
-        Serial.print("Epoch time: ");
-        Serial.println(epochTime);
+        //epochTime = getTime();
+        //Serial.print("Epoch time: ");
+        //Serial.println(epochTime);
 
         // Outbound format: ?requestUID%sleepInterval
         String(outbound) = "?" + String(requestUID) + "%" + String(sleepInterval);
       
-        delay(2000);
+        delay(100);
       
         Serial.print("Current outbound String: ");
         Serial.println(outbound);
