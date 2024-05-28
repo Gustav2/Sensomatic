@@ -1,7 +1,10 @@
+import json
+
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.shortcuts import render
 
+from datacollector.models import Trashcan
 from operations.models import Route
 
 
@@ -29,3 +32,4 @@ def get_route(request, username=None):
         "operating_date": route.operating_date,
         "completed": route.completed
     })
+
