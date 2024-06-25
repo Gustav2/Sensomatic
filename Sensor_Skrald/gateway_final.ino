@@ -44,6 +44,7 @@ void wifi_setup() {
   WiFi.begin(ssid, password);   //Connects to the WiFi
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
+    Serial.println("------------------------------------------------");
     Serial.println("Connecting to WiFi...");    // Prints connecting message if not connected
   }
   Serial.println("Connected succesfully!");     // Connected
@@ -53,7 +54,7 @@ void lora_setup() {
   // Setup LoRa module
   LoRa.setPins(csPin, resetPin, irqPin);
  
-  Serial.println("LoRa Receiver Test");
+  Serial.println("LoRa setup begun");
  
   // Start LoRa module at local frequency
   // 433E6 for Europe
@@ -104,7 +105,6 @@ void loop() {
     time_t currentTime = getTime(); // Get current time
     struct tm * timeinfo = localtime(&currentTime); // Convert UNIX time to struct tm
     
-    Serial.println("------------------------------------------------");
     Serial.print("Received packet at: ");
     // Print current time in 24-hour format
     char timeString[20];
@@ -189,9 +189,7 @@ void loop() {
           
           deserializeJson(doc, jsonResponse);
           
-          int sleepIntervalMinutes = doc["sleepInterval"];
-          
-          sleepInterval = sleepIntervalMinutes * 60000; // Converts hours to milliseconds
+          int sleepInterval = doc["sleepInterval"];
           
           Serial.print("httpResponseCode: ");
           Serial.println(httpResponseCode);
@@ -201,7 +199,8 @@ void loop() {
           Serial.println(sleepInterval);
         
           http.end();   // Ends HTTP to free resources
-        
+          Serial.println("HTTP communication ended");
+          Serial.println("------------------------------------------------");
         }
         
         else {
@@ -211,9 +210,6 @@ void loop() {
 
       else if (String(payload[0]) == "?") {Serial.println("Other gateway packet received, be cautious of interference");}
       else {Serial.println("Erroneous packet received");}
-    // NO DELAY IN THIS CODE
-    // Delay is currently implemented on the individual sensor transmission. 
-    // The gateway relays the LoRa data to the server as fast as possible
     }
   }
 }

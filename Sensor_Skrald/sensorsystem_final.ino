@@ -18,30 +18,25 @@ const int resetPin = 1;  // LoRa radio reset
 const int irqPin = 2;    // Must be a hardware interrupt pin
 
 String UID = WiFi.macAddress();
-
-uint64_t sleepInterval;
-int randomDelay = 0;
-
+uint64_t sleepInterval;   // Holding interval received from gateway
+int randomDelay = 0;      
 bool setupReceived = false; // Flag for ascertaining whether setup data has been received
 
-void initial_setup()  {
-  // This function runs the first time the ESP is active without any settings collected from the gateway
-  
+void initial_setup()  {  
   while (!setupReceived)  {    
     // Requests setup data
     LoRa.beginPacket();
     LoRa.print("@");
     LoRa.print(WiFi.macAddress());
     LoRa.endPacket();
-    Serial.println("@requestSetup package sent!");
-    // Format: @macAddress
-    delay(1000);
+    Serial.println("@requestSetup package sent!"); // Format: @macAddress
+    delay(500);
     
     unsigned long startTime;
     unsigned long waitTime = 15000;
 
     startTime = millis();
-    while (millis() - startTime < waitTime)  {
+    while (millis() - startTime < waitTime)  {  // Will repeat as long as waitTime is not exceeded
       int packetSize = LoRa.parsePacket(); // Try to parse the packet
       if (packetSize) {   // When LoRa packet received
         Serial.println("Received packet!");
@@ -80,43 +75,30 @@ void initial_setup()  {
     }
     Serial.println("setupReceived successful");
     Serial.println("");
-    delay(1000);
+    delay(500);
  }
-
 
 void setup_lora() {
   // Setup LoRa module
   LoRa.setPins(csPin, resetPin, irqPin);
- 
-  Serial.println("LoRa Receiver Test");
- 
-  // Start LoRa module at local frequency
-  // 433E6 for Europe
-  // 866E6 for Europe
-  // 915E6 for North America
+  Serial.println("LoRa setup begun");
  
   if (!LoRa.begin(433E6)) {
     Serial.println("Starting LoRa failed!");
     while (1)
       ;
   }
-
-  // Set spreading factor to highest
-  LoRa.setSpreadingFactor(12);
-
-  // Set signal bandwith. Must be 125 kHz or 250 kHz in Europe
-  LoRa.setSignalBandwidth(125E3);
-
+  LoRa.setSpreadingFactor(12);    // Set spreading factor to SF12
+  LoRa.setSignalBandwidth(125E3); // Set signal bandwith. Must be 125 kHz or 250 kHz in Europe
   // This combination results in an approximate bitrate of 250 bits/second according to TTN
-
   Serial.println("setup_lora() successful");
   }
+
 void setup_tof() {
   Serial.begin(115200);
   while (!Serial) delay(10);
 
   Serial.println(F("Adafruit VL53L1X sensor demo"));
-
   Wire.begin();
   if (!vl53.begin(0x29, &Wire)) {
     Serial.print(F("Error on init of VL sensor: "));
@@ -124,7 +106,6 @@ void setup_tof() {
     while (1) delay(10);
   }
   Serial.println(F("VL53L1X sensor OK!"));
-
   Serial.print(F("Sensor ID: 0x"));
   Serial.println(vl53.sensorID(), HEX);
 
@@ -140,7 +121,6 @@ void setup_tof() {
   Serial.println(vl53.getTimingBudget());
 
   Serial.println("setup_tof() successful");
-
   }
 
 void hibernation()  {
@@ -149,7 +129,7 @@ void hibernation()  {
   esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_FAST_MEM, ESP_PD_OPTION_OFF);
   esp_sleep_pd_config(ESP_PD_DOMAIN_XTAL,         ESP_PD_OPTION_OFF);
   
-  esp_sleep_enable_timer_wakeup(sleepInterval*1000);
+  esp_sleep_enable_timer_wakeup(sleepInterval*60000000); // Minutes to microseconds
   esp_deep_sleep_start();
   }
 
@@ -186,10 +166,8 @@ void sensor() {
     digitalWrite(LED_BUILTIN, LOW);
 
     // LoRa transmission part
-    // Create payload for packet
-    // Format "&data#UID
+    // Create payload for packet, format "&data#UID
     String payload = "&" + String(distance) + "#" + String(UID);
-    // LoRa packet sending
     Serial.print("Sending packet as: ");
     Serial.print("UID: ");
     Serial.println(UID);
@@ -200,12 +178,9 @@ void sensor() {
     LoRa.print(payload);
     LoRa.endPacket();
 
-    // data is read out, time for another reading!
-    vl53.clearInterrupt();
-  // Delay between transmissions
-  delay(1000);
+    vl53.clearInterrupt();  // clear sensor measurement data
+    }
   }
-}
 
 void initialise() {
   pinMode(LED_BUILTIN, OUTPUT);
@@ -218,29 +193,26 @@ void initialise() {
   Serial.println("initialise successful");
   }
 
-
-
 void setup() {
   Serial.begin(115200);
   Serial.println("------------------------------------------------");
-  delay(500);
+  delay(100);
   initialise();
   Serial.println("");
   Serial.println("Running sensor program...");
-  delay(500);
+  delay(100);
   sensor();
-  delay(500);
+  delay(100);
   setupReceived = false;
   Serial.println("");
   Serial.print("Entering sleep for: ");
-  Serial.print(sleepInterval / 60000);
+  Serial.print(sleepInterval);
   Serial.println(" minutes");
   Serial.println("================================================");
   Serial.flush();
   hibernation();
   }
 
-
 void loop() {
-  // loop() is never ran due to the sleep functionality.
+  // loop() will never run due to the sleep functionality.
   }
